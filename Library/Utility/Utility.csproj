@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Collections\Comparable.cs" />
     <Compile Include="Collections\Comparer.cs" />
-    <Compile Include="Collections\TEnumerable.cs" />
+    <Compile Include="Collections\EEnumerable.cs" />
     <Compile Include="Core\Assist.cs" />
     <Compile Include="Core\TryTo1.cs">
       <AutoGen>True</AutoGen>
@@ -55,8 +55,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TypeTool.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\TDataParameter.cs" />
-    <Compile Include="Data\TDbConnection.cs" />
+    <Compile Include="Data\EDataParameter.cs" />
+    <Compile Include="Data\EDbConnection.cs" />
     <Compile Include="Data\Sql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

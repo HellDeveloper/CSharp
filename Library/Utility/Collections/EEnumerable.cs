@@ -10,7 +10,7 @@ namespace Utility.Collections
     /// <summary>
     /// 
     /// </summary>
-    public static partial class TEnumerable
+    public static partial class EEnumerable
     {
         #region OrderBy
 
