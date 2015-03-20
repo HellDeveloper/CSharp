@@ -131,6 +131,8 @@ namespace Utility.Collections
         public static StringBuilder ToStringBuilder<T, V>(IEnumerable<T> args, Func<T, V> func, string separator = ", ")
         {
             StringBuilder builder = null;
+            if (args == null)
+                return builder;
             foreach (var item in args)
             {
                 if (item == null)
@@ -144,8 +146,6 @@ namespace Utility.Collections
                     builder.Append(separator);
                 builder.Append(temp);
             }
-            if (builder == null)
-                builder = new StringBuilder();
             return builder;
         }
 

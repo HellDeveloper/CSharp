@@ -4,7 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utility.Collections;
 using Utility.Core;
+using Utility.Data;
 
 namespace UnitTest
 {
@@ -13,8 +15,6 @@ namespace UnitTest
 
         public static void Main(string[] args)
         {
-            Console.WriteLine(DateTime.Now.ToShortDateString());
-            Console.WriteLine(DateTime.Now.ToLongDateString());
             Console.ReadKey();
         }
 
