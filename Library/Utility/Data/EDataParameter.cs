@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utility.Generic;
 using Utility.Core;
+using System.Reflection;
 
 namespace Utility.Data
 {
@@ -57,7 +58,7 @@ namespace Utility.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="to">到</param>
         /// <param name="from">从</param>
-        /// <returns>destine</returns>
+        /// <returns>to</returns> 
         public static T Clone<T>(T to, T from) where T : IDataParameter
         {
             to.DbType = from.DbType;
@@ -65,6 +66,7 @@ namespace Utility.Data
             to.ParameterName = from.ParameterName;
             to.SourceColumn = from.SourceColumn;
             to.Value = from.Value;
+            
             return to;
         }
         
