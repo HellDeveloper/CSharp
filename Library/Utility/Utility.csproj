@@ -41,9 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collections\Comparable.cs" />
-    <Compile Include="Collections\Comparer.cs" />
-    <Compile Include="Collections\EEnumerable.cs" />
+    <Compile Include="Generic\Comparable.cs" />
+    <Compile Include="Generic\Comparer.cs" />
+    <Compile Include="Generic\ECollection.cs" />
+    <Compile Include="Generic\EEnumerable.cs" />
     <Compile Include="Core\Assist.cs" />
     <Compile Include="Core\TryTo1.cs">
       <AutoGen>True</AutoGen>

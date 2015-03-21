@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utility.Core;
 
-namespace Utility.Collections
+namespace Utility.Generic
 {
     /// <summary>
     /// 

@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utility.Collections;
+using Utility.Generic;
 using Utility.Core;
 
 namespace Utility.Data
@@ -26,18 +26,6 @@ namespace Utility.Data
         public static char[] ParameterNamePerfix
         {
             get { return PARAMETER_NAME_PERFIX; }
-        }
-
-        /// <summary>
-        /// 在SourceColumn获取字段名。
-        /// if (String.IsNullOrWhiteSpace(param.ParameterName)) return null;    
-        /// </summary>
-        /// <param name="param"></param>
-        /// <returns>返回null，是获取不到</returns>
-        public static string GetFieldName(IDataParameter param)
-        {
-            string[] array = param.SourceColumn.Split(Assist.WHITE_SPACE);
-            return array.Length > 0 ? array[0] : null;
         }
 
         /// <summary>
@@ -63,6 +51,22 @@ namespace Utility.Data
             return t;
         }
 
+        /// <summary>
+        /// 从 from（DbType, Direction, ParameterName, SourceColumn, Value）克隆到 to
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="to">到</param>
+        /// <param name="from">从</param>
+        /// <returns>destine</returns>
+        public static T Clone<T>(T to, T from) where T : IDataParameter
+        {
+            to.DbType = from.DbType;
+            to.Direction = from.Direction;
+            to.ParameterName = from.ParameterName;
+            to.SourceColumn = from.SourceColumn;
+            to.Value = from.Value;
+            return to;
+        }
         
     }
 }

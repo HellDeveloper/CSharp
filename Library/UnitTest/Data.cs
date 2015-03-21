@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
-using Utility.Collections;
+using Utility.Generic;
 using Utility.Core;
 using Utility.Data;
 
@@ -126,5 +126,7 @@ namespace UnitTest
                 conn.ExecuteNonQuery(sql.GetDeleteSql(TABLE_NAME), sql);
             }
         }
+
+
     }
 }

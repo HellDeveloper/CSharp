@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Utility.Core;
 
 namespace Utility.Data
@@ -50,24 +47,68 @@ namespace Utility.Data
         /// <param name="sql">sql语句</param>
         /// <param name="args">参数</param>
         /// <returns></returns>
-        public static System.Data.IDbCommand CreateCommand<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
+        private static System.Data.IDbCommand CreateCommand<T>(this T conn, string sql, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput) where T : System.Data.IDbConnection
         {
             System.Data.IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = sql;
-            foreach (var item in args)
-            {
-                if (item == null || String.IsNullOrWhiteSpace(item.ParameterName))
-                    continue;
-                if (item.Value == null)
-                    item.Value = DBNull.Value;
-                if (cmd.CommandType != CommandType.StoredProcedure && item.Direction != ParameterDirection.Input)
-                    cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(item);
-            }
-
+            EDbConnection.AddParameter(cmd, args, notinput);
             if (cmd.CommandType != CommandType.StoredProcedure && sql.IndexOf(Utility.Core.Assist.WHITE_SPACE, 0) == -1)
                 cmd.CommandType = CommandType.StoredProcedure;
             return cmd;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cmd"></param>
+        /// <param name="args"></param>
+        /// <param name="notinput"></param>
+        /// <returns></returns>
+        private static T AddParameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput) where T : System.Data.IDbCommand
+        {
+            foreach (var item in args)
+            {
+                if (item == null)
+                    continue;
+                else if (item is IEnumerable<object>)
+                    EDbConnection.AddParameter(cmd, item as IEnumerable<object>, notinput);
+                else if (item is IDataParameter)
+                    EDbConnection.AddParameter(cmd, item as IDataParameter, notinput);
+            }
+            return cmd;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cmd"></param>
+        /// <param name="param"></param>
+        /// <param name="notinput"></param>
+        private static void AddParameter<T>(T cmd, System.Data.IDataParameter param, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput) where T : System.Data.IDbCommand
+        {
+            if (String.IsNullOrWhiteSpace(param.ParameterName))
+                return;
+            param.Value = param.Value ?? DBNull.Value;
+            IDataParameter arg = EDataParameter.Clone<System.Data.IDataParameter>(cmd.CreateParameter(), param);
+            if (arg.Direction != ParameterDirection.Input)
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                notinput.Add(param, arg);
+            }
+            cmd.Parameters.Add(arg);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="notinput"></param>
+        private static void ClearNotInput(Dictionary<IDataParameter, IDataParameter> notinput)
+        {
+            foreach (var item in notinput)
+                item.Key.Value = item.Value.Value;
+            notinput.Clear();
         }
 
         /// <summary>
@@ -80,14 +121,16 @@ namespace Utility.Data
         /// <param name="args"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        internal static Result Execute<T, Result>(T conn, string sql, IEnumerable<System.Data.IDataParameter> args, Func<System.Data.IDbCommand, Result> func) where T : System.Data.IDbConnection
+        private static Result Execute<T, Result>(T conn, string sql, IEnumerable<object> args, Func<System.Data.IDbCommand, Result> func) where T : System.Data.IDbConnection
         {
+            Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput = new Dictionary<IDataParameter, IDataParameter>();
             bool need_close = conn.State == ConnectionState.Closed;
-            System.Data.IDbCommand cmd = EDbConnection.CreateCommand(conn, sql, args);
+            System.Data.IDbCommand cmd = EDbConnection.CreateCommand(conn, sql, args, notinput);
             EDbConnection.OpenConnection(conn);
             Result temp = func.Invoke(cmd);
             if (need_close)
                 EDbConnection.CloseConnection(conn);
+            EDbConnection.ClearNotInput(notinput);
             cmd.Parameters.Clear();
             return temp;
         }
@@ -97,7 +140,7 @@ namespace Utility.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        internal static int ExecuteNonQuery<T>(T cmd) where T : System.Data.IDbCommand
+        private static int ExecuteNonQuery<T>(T cmd) where T : System.Data.IDbCommand
         {
             return cmd.ExecuteNonQuery();
         }
@@ -107,7 +150,7 @@ namespace Utility.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        internal static object ExecuteScalar<T>(T cmd) where T : System.Data.IDbCommand
+        private static object ExecuteScalar<T>(T cmd) where T : System.Data.IDbCommand
         {
             return cmd.ExecuteScalar();
         }
@@ -118,7 +161,7 @@ namespace Utility.Data
         /// <param name="table"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal static bool TryAddColumn(DataTable table, string name)
+        private static bool TryAddColumn(DataTable table, string name)
         {
             try
             {
@@ -185,9 +228,11 @@ namespace Utility.Data
         /// <returns></returns>
         public static IDataReader GetDataReader<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
         {
-            System.Data.IDbCommand cmd = EDbConnection.CreateCommand(conn, sql.Trim(), args);
+            Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput = new Dictionary<IDataParameter, IDataParameter>();
+            System.Data.IDbCommand cmd = EDbConnection.CreateCommand(conn, sql.Trim(), args, notinput);
             EDbConnection.OpenConnection(conn);
-            var temp = cmd.ExecuteReader(behavior);
+            IDataReader temp = cmd.ExecuteReader(behavior);
+            EDbConnection.ClearNotInput(notinput);
             cmd.Parameters.Clear();
             return temp;
         }
@@ -253,6 +298,7 @@ namespace Utility.Data
             ConnectionStringSettings conn_str_set = ConfigurationManager.ConnectionStrings[str];
             if (conn_str_set != null)
                 conn.ConnectionString = conn_str_set.ConnectionString;
+            
         }
 
     }
