@@ -56,9 +56,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Core.cs" />
+    <Content Include="Create_Letter_Table.sql" />
+    <Compile Include="Factory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data.cs" />
+    <Content Include="Create_UnitTest_Database.sql" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utility\Utility.csproj">

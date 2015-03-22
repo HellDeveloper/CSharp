@@ -281,24 +281,25 @@ namespace Utility.Data
     {
 
         /// <summary>
-        /// 
+        /// 设置连接字符串
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
         /// <param name="str">没有分号，从app.config里查找</param>
-        public static void SetConnectionString<T>(this T conn, string str) where T : System.Data.IDbConnection
+        /// <returns>返回参数连接对象</returns>
+        public static T SetConnectionString<T>(this T conn, string str) where T : System.Data.IDbConnection
         {
             if (String.IsNullOrWhiteSpace(str))
-                return;
+                return conn;
             if (str.IndexOf(Assist.SEMICOLON) >= 0)
             {
                 conn.ConnectionString = str;
-                return;
+                return conn;
             }
             ConnectionStringSettings conn_str_set = ConfigurationManager.ConnectionStrings[str];
             if (conn_str_set != null)
                 conn.ConnectionString = conn_str_set.ConnectionString;
-            
+            return conn;
         }
 
     }
