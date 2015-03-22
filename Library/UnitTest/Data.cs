@@ -97,7 +97,7 @@ namespace UnitTest
                 this.TestContext.WriteLine("Get SQL:{0}", args.GetInsertSql(TABLE_NAME));
                 this.TestContext.WriteLine("Build SQL:{0}", insert_sql);
                 this.TestContext.WriteLine("result: {0}", result);
-                this.TestContext.WriteLine("");
+                this.TestContext.WriteLine(" ");
             }
             
         }
