@@ -58,7 +58,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static <#=lower #>? TryTo<#=to #>(<#=that_string #>string str)
 		{
 			<#=lower #> result;
@@ -69,16 +69,14 @@ namespace Utility.Core
 		<#}#>
 
 		/// <summary>
-		/// 
+		/// retrun t == null ?  String.Empty : t.ToString();
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="t"></param>
-		/// <returns>没有null值</returns>
-		public static string TryToString<T>(this T t) where T : class
+		/// <returns></returns>
+		public static string TryToString<T>(this T t) 
 		{
-			if (t == null)
-				return String.Empty;
-			return t.ToString();
+			return t == null ? String.Empty : t.ToString();
 		}
 		
 

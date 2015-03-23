@@ -1,0 +1,10 @@
+﻿// ParameterName
+// 如果ParameterName为空或者空白字符，Value值当作SQL
+if (String.IsNullOrWhiteSpace(param.ParameterName))
+	return param.Value == null ? null : param.Value.ToString();
+
+
+
+// IEnumerable<IDataParameter>  GetSql和BuildSql的区别
+// Get...Sql  -----没有ParameterName，给Value值替代 ----- INSERT INTO TABLE (NAME) VALUE ('A')
+// Build...Sql-----带有ParameterName                ----- INSERT INTO TABLE (NAME) VALUE (@NAME)

@@ -31,7 +31,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static short? TryToShort(this string str)
 		{
 			short result;
@@ -59,7 +59,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static int? TryToInt(this string str)
 		{
 			int result;
@@ -87,7 +87,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static long? TryToLong(this string str)
 		{
 			long result;
@@ -115,7 +115,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static ushort? TryToUShort(this string str)
 		{
 			ushort result;
@@ -143,7 +143,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static uint? TryToUInt(this string str)
 		{
 			uint result;
@@ -171,7 +171,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static ulong? TryToULong(this string str)
 		{
 			ulong result;
@@ -199,7 +199,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static float? TryToFloat(this string str)
 		{
 			float result;
@@ -227,7 +227,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static double? TryToDouble(this string str)
 		{
 			double result;
@@ -255,7 +255,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static decimal? TryToDecimal(this string str)
 		{
 			decimal result;
@@ -283,7 +283,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static char? TryToChar(this string str)
 		{
 			char result;
@@ -311,7 +311,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static bool? TryToBool(this string str)
 		{
 			bool result;
@@ -339,7 +339,7 @@ namespace Utility.Core
 		/// <summary>
 		/// </summary>
 		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <returns>转换失败返回null</returns>
 		public static System.DateTime? TryToDateTime(this string str)
 		{
 			System.DateTime result;
@@ -349,16 +349,14 @@ namespace Utility.Core
 		}
 		
 		/// <summary>
-		/// 
+		/// retrun t == null ?  String.Empty : t.ToString();
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="t"></param>
-		/// <returns>没有null值</returns>
-		public static string TryToString<T>(this T t) where T : class
+		/// <returns></returns>
+		public static string TryToString<T>(this T t) 
 		{
-			if (t == null)
-				return String.Empty;
-			return t.ToString();
+			return t == null ? String.Empty : t.ToString();
 		}
 		
 

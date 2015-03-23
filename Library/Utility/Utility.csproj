@@ -62,6 +62,8 @@
     <Compile Include="Data\Sql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebForm\ControlTool.cs" />
+    <Compile Include="WebForm\EDropDownList.cs" />
+    <Compile Include="WebForm\EListItemCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Core\TryTo.tt">
@@ -75,6 +77,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Document\Core.txt" />
+    <Content Include="Document\IDataParameter.txt" />
+    <Content Include="Document\IDbConnection.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

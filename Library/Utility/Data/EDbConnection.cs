@@ -297,8 +297,9 @@ namespace Utility.Data
                 return conn;
             }
             ConnectionStringSettings conn_str_set = ConfigurationManager.ConnectionStrings[str];
-            if (conn_str_set != null)
+            //if (conn_str_set != null)
                 conn.ConnectionString = conn_str_set.ConnectionString;
+            
             return conn;
         }
 

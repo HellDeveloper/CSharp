@@ -92,6 +92,11 @@ namespace UnitTest
                 args.Add(null, "NULL", "ReadTime"); // 拼接SQL
                 args.Add("@Category", "问候", "Category");
                 string insert_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
+                /*
+                 INSERT INTO Letter 
+                 (FromName, ToName, Title, Contents, SendTime, ReadTime, Category) 
+                 VALUES (@FromName, @ToName, @Title, @Contents, @SendTime, NULL, @Category)
+                 */
                 //int result = conn.ExecuteNonQuery(insert_sql, args);
             }
             

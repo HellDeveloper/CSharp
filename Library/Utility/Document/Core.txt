@@ -1,0 +1,2 @@
+﻿// TryTo... 转换失败返回null
+// int i = str.TryToInt() ?? 0;
