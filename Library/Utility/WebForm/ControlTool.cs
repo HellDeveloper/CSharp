@@ -9,8 +9,12 @@ using System.Web.UI.WebControls;
 
 namespace Utility.WebForm
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class ControlTool
     {
+        #region CreateParameter
         /// <summary>
         /// 
         /// </summary>
@@ -87,6 +91,14 @@ namespace Utility.WebForm
                 if (currentLevel < maxLevel)
                     CreateParameters(ctrl, list, currentLevel + 1, maxLevel);
             }
+        }
+        #endregion
+
+        public static string GetDataFieldName(this Control control)
+        {
+            if (!(control is IAttributeAccessor))
+                return null;
+            return (control as IAttributeAccessor).GetAttribute("data-fieldname");
         }
 
     }
