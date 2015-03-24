@@ -8,6 +8,9 @@ using Utility.Core;
 
 namespace Utility.WebForm
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class EListItemCollection
     {
         /// <summary>

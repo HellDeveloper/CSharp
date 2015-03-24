@@ -133,18 +133,14 @@ namespace Utility.WebForm
         private static string get_field_name(Control control)
         {
             string fieldname = GetDataFieldName(control);
-            if (String.IsNullOrWhiteSpace(fieldname))
-                return null;
-            int index = fieldname.IndexOf(Assist.WHITE_SPACE);
-            if (index <= 0)
-                return fieldname;
-            return fieldname.Substring(0, index);
+            return Assist.GetBeforeFirstWhiteSpace(fieldname);
         }
 
         /// <summary>
         /// attribute.SetAttribute(DATA_FIELDNAME, value);
         /// </summary>
         /// <param name="control"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
         public static bool SetDataFieldName(this Control control, string value)
         {
@@ -174,6 +170,7 @@ namespace Utility.WebForm
         /// </summary>
         /// <param name="control"></param>
         /// <param name="row"></param>
+        /// <param name="after_action"></param>
         /// <param name="currentLevel"></param>
         /// <param name="maxLevel"></param>
         private static void fill_data(Control control, DataRow row, Action<Control, string, object> after_action, int currentLevel, int maxLevel)

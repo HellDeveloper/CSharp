@@ -24,8 +24,7 @@ namespace Utility.Data
         {
             if (String.IsNullOrWhiteSpace(param.SourceColumn) && !String.IsNullOrWhiteSpace(param.ParameterName))
                 return param.ParameterName.TrimStart(EDataParameter.PARAMETER_NAME_PERFIX);
-            string[] array = param.SourceColumn.Split(Assist.WHITE_SPACE);
-            return array.Length > 0 ? array[0] : null;
+            return Assist.GetBeforeFirstWhiteSpace(param.SourceColumn);
         }
 
         /// <summary>

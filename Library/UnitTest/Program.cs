@@ -17,8 +17,9 @@ namespace UnitTest
 
         public static void Main(string[] args)
         {
-            IDataParameter param = new SqlParameter();
-            Console.WriteLine(param.SourceVersion);
+            string str = "01234567";
+            Assist.Replace(str, 'A', 0, 2, 4, 6, 8, 10);
+            Console.WriteLine(str);
             Console.ReadKey();
         }
 

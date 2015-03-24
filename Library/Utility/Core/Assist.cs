@@ -51,6 +51,32 @@ namespace Utility.Core
             return args;
         }
 
+        /// <summary>
+        /// 获取第一个空格前面的字符
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string GetBeforeFirstWhiteSpace(string str)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+                return null;
+            string[] array = str.Split(Assist.WHITE_SPACE);
+            return array.Length > 0 ? array[0] : null;
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="c"></param>
+        /// <param name="indexes"></param>
+        public static unsafe void Replace(string str, char c, params int[] indexes)
+        {
+            fixed(char* ptr = str)
+            {
+                foreach (var index in indexes)
+                    if (index < str.Length)
+                       *(ptr + index) = c;
+            }
+        }
     }
 }
