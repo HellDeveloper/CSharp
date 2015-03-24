@@ -21,8 +21,6 @@ namespace Utility.WebForm
         /// <returns></returns>
         public static T CreateParameter<T>(string parameterName, object value, string sourceColumn) where T : class, IDataParameter, new()
         {
-            if (String.IsNullOrWhiteSpace(sourceColumn))
-                return null;
             T t = new T();
             t.ParameterName = parameterName;
             t.SourceVersion = DataRowVersion.Original;
@@ -42,11 +40,13 @@ namespace Utility.WebForm
             if (!(control is IAttributeAccessor))
                return null;
             string fieldname = (control as IAttributeAccessor).GetAttribute("data-fieldname");
-            if (String.IsNullOrWhiteSpace(fieldname))
+            if (fieldname == null)
                 return null;
             string value = String.Empty;
             if (control is ITextControl)
                 value = (control as ITextControl).Text;
+            if (String.IsNullOrWhiteSpace(control.ID))
+                return CreateParameter<T>(null, value, fieldname);
             return CreateParameter<T>("@" + control.ID, value, fieldname);
         }
 

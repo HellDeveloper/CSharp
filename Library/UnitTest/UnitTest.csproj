@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
     <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
@@ -57,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Core.cs" />
     <Content Include="Create_Letter_Table.sql" />
+    <Compile Include="Controller.cs" />
     <Compile Include="Factory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

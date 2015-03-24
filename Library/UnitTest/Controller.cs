@@ -3,9 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
-using Utility.Generic;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 using Utility.Core;
 using Utility.Data;
+using Utility.Generic;
+using Utility.WebForm;
 
 namespace UnitTest
 {
@@ -13,13 +16,13 @@ namespace UnitTest
     /// SQL 的摘要说明
     /// </summary>
     [TestClass]
-    public class Data
+    public class Controller
     {
         public const string CONNECTION_STRING = "UnitTest";
 
         public const string TABLE_NAME = "Profile";
 
-        public Data()
+        public Controller()
         {
             //
             //TODO:  在此处添加构造函数逻辑
@@ -69,30 +72,21 @@ namespace UnitTest
         //
         #endregion
 
-        
-
-        [TestMethod]
-        public void SetConnectionString()
-        {
-            SqlConnection conn = new SqlConnection();
-            conn.SetConnectionString("UnitTest11");
-        }
-
         [TestMethod]
         public void ExectueInsertSql()
         {
             using (var conn = Factory.CreateConnection())
             {
-                var args = Factory.CreateParameters();
-                args.Add("@FromName", "Tom", "FromName");
-                args.Add("@ToName", "Mary", "ToName");
-                args.Add("@Title", "Hi", "Title");
-                args.Add("@Contents", "最近过得怎么样？！", "Contents");
-                args.Add("@SendTime", DateTime.Now, "SendTime");
-                args.Add(null, "NULL", "ReadTime"); // 拼接SQL
-                args.Add("@Category", "问候", "Category");
-                string insert_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
-                //int result = conn.ExecuteNonQuery(insert_sql, args);
+                Panel pnl = new Panel();
+                pnl.Controls.Add(CreateTextBox("FromName", "Tom", "FromName"));
+                pnl.Controls.Add(CreateTextBox("ToName", "Mary", "ToName"));
+                pnl.Controls.Add(CreateTextBox("Title", "Hi", "Title"));
+                pnl.Controls.Add(CreateTextBox("Contents", "最近过得怎么样？！", "Contents"));
+                pnl.Controls.Add(CreateTextBox("SendTime", DateTime.Now.ToString(), "SendTime"));
+                pnl.Controls.Add(CreateTextBox(null, "NULL", "ReadTime")); // 拼接SQL
+                pnl.Controls.Add(CreateTextBox("@Category", "问候", "Category"));
+                var args = pnl.CreateParameters<SqlParameter>();
+                string sql = args.BuildInsertSql(TABLE_NAME);
             }
             
         }
@@ -102,10 +96,29 @@ namespace UnitTest
         {
             using (SqlConnection conn = new SqlConnection())
             {
-                
+                Panel pnl = new Panel();
+                pnl.Controls.Add(CreateTextBox("FromName", "Tom", "FromName LIKE"));
+                pnl.Controls.Add(CreateTextBox("ToName", "Mary", "ToName ="));
+                pnl.Controls.Add(CreateTextBox("Title", "", "Title LIKE"));
+                pnl.Controls.Add(CreateTextBox("Contents", "", "Contents LIKE"));
+                pnl.Controls.Add(CreateTextBox("SendTime", "", "SendTime LIKE"));
+                pnl.Controls.Add(CreateTextBox(null, "ReadTime IS NULL", " J")); // 拼接SQL
+                pnl.Controls.Add(CreateTextBox("Category", "", "Category Like"));
+                var args = pnl.CreateParameters<SqlParameter>();
+                string sql = args.BuildDeleteSql(TABLE_NAME);
             }
         }
 
+        public TextBox CreateTextBox(string id, string text, string fieldname)
+        {
+            TextBox txt = new TextBox()
+            {
+                ID = id,
+                Text = text,
+            };
+            txt.Attributes["data-fieldname"] = fieldname;
+            return txt;
+        } 
 
     }
 }
