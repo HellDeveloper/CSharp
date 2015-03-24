@@ -86,7 +86,8 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox(null, "NULL", "ReadTime")); // 拼接SQL
                 pnl.Controls.Add(CreateTextBox("@Category", "问候", "Category"));
                 var args = pnl.CreateParameters<SqlParameter>();
-                string sql = args.BuildInsertSql(TABLE_NAME);
+                string build_sql = args.BuildInsertSql(TABLE_NAME);
+                string get_sql = args.GetInsertSql(TABLE_NAME);
             }
             
         }
@@ -105,7 +106,8 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox(null, "ReadTime IS NULL", " J")); // 拼接SQL
                 pnl.Controls.Add(CreateTextBox("Category", "", "Category Like"));
                 var args = pnl.CreateParameters<SqlParameter>();
-                string sql = args.BuildDeleteSql(TABLE_NAME);
+                string build_sql = args.BuildDeleteSql(TABLE_NAME);
+                string get_sql = args.GetDeleteSql(TABLE_NAME);
             }
         }
 

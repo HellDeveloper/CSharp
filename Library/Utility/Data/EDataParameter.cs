@@ -59,7 +59,10 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetComparer(this IDataParameter param)
         {
-            return param.SourceColumn.Substring(param.SourceColumn.IndexOf(Assist.WHITE_SPACE));
+            int index = param.SourceColumn.IndexOf(Assist.WHITE_SPACE);
+            if (index < 0)
+                return String.Empty ;
+            return param.SourceColumn.Substring(index);
         }
 
         /// <summary>
