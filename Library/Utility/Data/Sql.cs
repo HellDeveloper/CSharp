@@ -38,7 +38,10 @@ namespace Utility.Data
             if (param.Value == null || DBNull.Value.Equals(param.Value))
                 return "NULL";
             else if (param.Value is String)
-                return String.Format("'{0}'", ((String)param.Value).Replace("'", "''"));
+                if (param.SourceVersion == DataRowVersion.Original && param.GetComparer().EndsWith(" like", StringComparison.OrdinalIgnoreCase))
+                    return String.Format("'%{0}%'", ((String)param.Value).Replace("'", "''"));
+                else
+                    return String.Format("'{0}'", ((String)param.Value).Replace("'", "''"));
             else if (param is DateTime)
                 return String.Format("'{0}'", ((DateTime)param.Value).ToString(Assist.ISO_DATETIME_FORMAT));
             else if (param.Value is bool)
@@ -115,6 +118,9 @@ namespace Utility.Data
         {
             if (String.IsNullOrWhiteSpace(param.ParameterName))
                 return param.Value == null ? null : param.Value.ToString();
+            if (param.SourceVersion == DataRowVersion.Original)
+                if (String.IsNullOrWhiteSpace(param.Value.TryToString()))
+                    return null;
             return String.Format("{0}{1}{2}", param.SourceColumn, Assist.WHITE_SPACE, func(param));
         }
 
