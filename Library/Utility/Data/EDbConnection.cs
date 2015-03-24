@@ -91,7 +91,7 @@ namespace Utility.Data
             if (String.IsNullOrWhiteSpace(param.ParameterName))
                 return;
             param.Value = param.Value ?? DBNull.Value;
-            IDataParameter arg = EDataParameter.Clone<System.Data.IDataParameter>(cmd.CreateParameter(), param);
+            IDataParameter arg = EDataParameter.Copy<System.Data.IDataParameter>(cmd.CreateParameter(), param);
             if (arg.Direction != ParameterDirection.Input)
             {
                 cmd.CommandType = CommandType.StoredProcedure;

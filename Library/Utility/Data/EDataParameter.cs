@@ -53,13 +53,23 @@ namespace Utility.Data
         }
 
         /// <summary>
+        /// 在SourceColumn获取比较运算符
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string GetComparer(this IDataParameter param)
+        {
+            return param.SourceColumn.Substring(param.SourceColumn.IndexOf(Assist.WHITE_SPACE));
+        }
+
+        /// <summary>
         /// 从 from（DbType, Direction, ParameterName, SourceColumn, Value）克隆到 to
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="to">到</param>
         /// <param name="from">从</param>
         /// <returns>to</returns> 
-        public static T Clone<T>(T to, T from) where T : IDataParameter
+        public static T Copy<T>(T to, T from) where T : IDataParameter
         {
             to.DbType = from.DbType;
             to.Direction = from.Direction;
@@ -67,6 +77,25 @@ namespace Utility.Data
             to.SourceColumn = from.SourceColumn;
             to.Value = from.Value;
             
+            return to;
+        }
+
+        /// <summary>
+        /// 从 from（DbType, Direction, ParameterName, SourceColumn, Value）克隆到 to 。 并且可能改变值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="to">到</param>
+        /// <param name="from">从</param>
+        /// <returns>to</returns> 
+        internal static T Clone<T>(T to, T from) where T : IDataParameter
+        {
+            EDataParameter.Copy(to, from);
+            if (to.SourceVersion == DataRowVersion.Original)
+            {
+                if (to.GetComparer().EndsWith(" like", StringComparison.OrdinalIgnoreCase))
+                    to.Value = String.Format("%{0}%", to.Value.TryToString() ?? String.Empty);
+                to.SourceVersion = DataRowVersion.Current;
+            }
             return to;
         }
         

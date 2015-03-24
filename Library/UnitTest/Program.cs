@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Utility.Generic;
 using Utility.Core;
 using Utility.Data;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace UnitTest
 {
@@ -15,6 +17,8 @@ namespace UnitTest
 
         public static void Main(string[] args)
         {
+            IDataParameter param = new SqlParameter();
+            Console.WriteLine(param.SourceVersion);
             Console.ReadKey();
         }
 
