@@ -347,7 +347,7 @@ namespace Utility.Data
             Result temp = func(reader);
             if (!reader.IsClosed)
                 reader.Close();
-            return temp;
+            return temp; 
         }
 
         /// <summary>
