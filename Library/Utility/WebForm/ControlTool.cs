@@ -73,13 +73,14 @@ namespace Utility.WebForm
         }
 
         /// <summary>
-        /// 
+        /// 创建Parameter
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">创建的类型</typeparam>
         /// <param name="control"></param>
-        /// <param name="maxLevel">control递归的次数</param>
+        /// <param name="func"></param>
+        /// <param name="maxLevel"></param>
         /// <returns></returns>
-        public static List<T> CreateParameters<T>(this Control control, int maxLevel = 2) where T : class, IDataParameter, new()
+        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2) where T : class, IDataParameter, new()
         {
             List<T> list = new List<T>();
             if (0 > maxLevel)
@@ -95,12 +96,18 @@ namespace Utility.WebForm
         /// <param name="control"></param>
         /// <param name="list"></param>
         /// <param name="currentLevel"></param>
-        /// <param name="maxLevel">control递归的次数</param>
-        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel) where T : class, IDataParameter, new()
+        /// <param name="maxLevel"></param>
+        /// <param name="func"></param>
+        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null) where T : class, IDataParameter, new()
         {
             T t = CreateParameter<T>(control);
             if (t != null)
-                list.Add(t);
+            {
+                if (func != null)
+                    t = func(t);
+                if (t != null)
+                    list.Add(t);
+            }
             if (currentLevel < maxLevel)
                 foreach (Control ctrl in control.Controls)
                     create_parameters(ctrl, list, currentLevel + 1, maxLevel);
@@ -118,6 +125,11 @@ namespace Utility.WebForm
             return (control as IAttributeAccessor).GetAttribute(DATA_FIELDNAME);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="control"></param>
+        /// <returns></returns>
         private static string get_field_name(Control control)
         {
             string fieldname = GetDataFieldName(control);
@@ -148,6 +160,8 @@ namespace Utility.WebForm
         /// </summary>
         /// <param name="control"></param>
         /// <param name="row"></param>
+        /// <param name="after_action">回调函数</param>
+        /// <param name="maxLevel">递归的深度</param>
         public static void FillData(this Control control, DataRow row, Action<Control, string, object> after_action = null, int maxLevel = 2)
         {
             if (row.Table == null)
@@ -180,6 +194,12 @@ namespace Utility.WebForm
                     fill_data(ctrl, row, after_action, currentLevel + 1, maxLevel);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="control"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         private static void fill_data(Control control, string name, object value)
         {
             value = value ?? String.Empty;
