@@ -49,6 +49,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TryTo.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\TDbConnection.cs" />
     <Compile Include="Generic\Comparable.cs" />
     <Compile Include="Generic\Comparer.cs" />
     <Compile Include="Generic\ECollection.cs" />
