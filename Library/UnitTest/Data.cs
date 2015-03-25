@@ -75,7 +75,7 @@ namespace UnitTest
         public void SetConnectionString()
         {
             SqlConnection conn = new SqlConnection();
-            conn.SetConnectionString("UnitTest11");
+            conn.SetConnectionString("UnitTest");
         }
 
         [TestMethod]

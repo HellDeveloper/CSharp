@@ -66,7 +66,7 @@ namespace Utility.Data
         }
 
         /// <summary>
-        /// 从 from（DbType, Direction, ParameterName, SourceColumn, Value）克隆到 to
+        /// 从 from（DbType, Direction, ParameterName, SourceColumn, Value）复制到 to
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="to">到</param>
@@ -79,7 +79,6 @@ namespace Utility.Data
             to.ParameterName = from.ParameterName;
             to.SourceColumn = from.SourceColumn;
             to.Value = from.Value;
-            
             return to;
         }
 
