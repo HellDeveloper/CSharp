@@ -38,6 +38,7 @@ namespace Utility.Data
         /// <param name="cmd"></param>
         /// <param name="args"></param>
         /// <param name="notinput"></param>
+        /// <param name="increment"></param>
         /// <returns></returns>
         private static T add_parameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput, int increment) where T : System.Data.IDbCommand
         {
@@ -308,6 +309,26 @@ namespace Utility.Data
         /// <param name="args"></param>
         /// <param name="func"></param>
         /// <returns></returns>
+        private static Result execute_reader<T, Result>(this T conn, string sql, IEnumerable<object> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
+        {
+            CommandBehavior behavior = conn.State == ConnectionState.Closed ? CommandBehavior.CloseConnection : CommandBehavior.Default;
+            IDataReader reader = EDbConnection.execute_get_datareader(conn, sql, args, behavior);
+            Result temp = func(reader);
+            if (!reader.IsClosed)
+                reader.Close();
+            return temp;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Result"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
         public static Result ExecuteReader<T, Result>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
         {
             CommandBehavior behavior = conn.State == ConnectionState.Closed ? CommandBehavior.CloseConnection : CommandBehavior.Default;
@@ -330,7 +351,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static Result ExecuteReader<T, Result>(this T conn, string sql, Func<IDataReader, Result> func, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-            return EDbConnection.ExecuteReader(conn, sql, args, func);
+            return EDbConnection.execute_reader(conn, sql, args, func);
         }
 
         /// <summary>
@@ -341,7 +362,7 @@ namespace Utility.Data
         /// <param name="args"></param>
         /// <param name="behavior"></param>
         /// <returns></returns>
-        public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
+        private static IDataReader execute_get_datareader<T>(this T conn, string sql, IEnumerable<object> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
         {
             Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput = new Dictionary<IDataParameter, IDataParameter>();
             System.Data.IDbCommand cmd = EDbConnection.create_command(conn, sql.Trim(), args, notinput);
@@ -358,12 +379,26 @@ namespace Utility.Data
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <param name="behavior"></param>
+        /// <returns></returns>
+        public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.execute_get_datareader(conn, sql, args, behavior);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
         /// <param name="behavior"></param>
         /// <param name="args"></param>
         /// <returns></returns>
         public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, CommandBehavior behavior = CommandBehavior.CloseConnection, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-            return EDbConnection.ExecuteGetDataReader(conn, sql, args, behavior);
+            return EDbConnection.execute_get_datareader(conn, sql, args, behavior);
         }
 
         /// <summary>
@@ -375,7 +410,20 @@ namespace Utility.Data
         /// <returns></returns>
         public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
         {
-            return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
+            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, IEnumerable<IEnumerable<System.Data.IDataParameter>> args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable); 
         }
 
         /// <summary>
@@ -388,7 +436,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-            return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
+            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
 
     }

@@ -83,10 +83,6 @@ namespace Utility.Data
             return param.ParameterName;
         }
 
-        /// <summary>
-        /// FieldName = Value
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="param"></param>
         /// <returns></returns>
         public static string GetSetSql<T>(T param) where T : IDataParameter
@@ -94,10 +90,6 @@ namespace Utility.Data
             return String.Format("{0} = {1}", Sql.GetFieldName(param), Sql.GetParameterValue(param));
         }
 
-        /// <summary>
-        /// FieldName = Value
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="param"></param>
         /// <returns></returns>
         public static string BuildSetSql<T>(T param) where T : IDataParameter
@@ -126,13 +118,24 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="func"></param>
         /// <returns></returns>
         public static string ConditionSql(IEnumerable<IDataParameter> args, Func<IDataParameter, object> func)
         {
             var temp = EEnumerable.ToStringBuilder(args, func, " AND ");
+            return temp == null ? String.Empty : temp.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string ConditionSql(IEnumerable<IEnumerable<IDataParameter>> args, Func<IEnumerable<IDataParameter>, object> func)
+        {
+            var temp = EEnumerable.ToStringBuilder(args, func, " OR ");
             return temp == null ? String.Empty : temp.ToString();
         }
 
@@ -152,7 +155,6 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="where"></param>
         /// <param name="table_name"></param>
@@ -173,7 +175,6 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="table_name"></param>
         /// <param name="func"></param>
@@ -195,13 +196,12 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql(this IDataParameter param)
         {
-            return ConditionSql(param, Sql.FormatSqlValue);
+            return Sql.ConditionSql(param, Sql.FormatSqlValue);
         }
 
         /// <summary>
-        /// 
+        /// AND
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <returns></returns>
         public static string GetConditionSql(this IEnumerable<IDataParameter> args)
@@ -210,34 +210,41 @@ namespace Utility.Data
         }
 
         /// <summary>
-        /// 
+        /// OR
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
-        /// <param name="table_name"></param>
         /// <returns></returns>
-        public static string GetInsertSql<T>(this IEnumerable<T> args, string table_name) where T : IDataParameter
+        public static string GetConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
         {
-            return Sql.InsertSql(args as IEnumerable<IDataParameter>, table_name, Sql.GetParameterValue);
+            return Sql.ConditionSql(args, Sql.GetConditionSql);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <returns></returns>
+        public static string GetInsertSql(this IEnumerable<IDataParameter> args, string table_name)
+        {
+            return Sql.InsertSql(args, table_name, Sql.GetParameterValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="args"></param>
         /// <param name="where"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
         public static string GetUpdateSql(IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where, string table_name)
         {
-            return UpdateSql(args, where, table_name, GetSetSql, GetConditionSql);
+            return Sql.UpdateSql(args, where, table_name, Sql.GetSetSql, Sql.GetConditionSql);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
@@ -255,24 +262,32 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql(this IDataParameter param)
         {
-            return ConditionSql(param, Sql.GetParameterName);
+            return Sql.ConditionSql(param, Sql.GetParameterName);
         }
 
         /// <summary>
-        /// 
+        /// AND
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <returns></returns>
         public static string BuildConditionSql(this IEnumerable<IDataParameter> args)
         {
-            return ConditionSql(args, BuildConditionSql);
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// OR
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
+        {
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
@@ -284,20 +299,18 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="table_name"></param>
         /// <param name="where"></param>
         /// <returns></returns>
         public static string BuildUpdateSql(this IEnumerable<IDataParameter> args, string table_name, IEnumerable<IDataParameter> where)
         {
-            return UpdateSql(args, where, table_name, BuildSetSql, BuildConditionSql);
+            return Sql.UpdateSql(args, where, table_name, Sql.BuildSetSql, Sql.BuildConditionSql);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
