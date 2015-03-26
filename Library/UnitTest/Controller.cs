@@ -84,10 +84,12 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox("Contents", "最近过得怎么样？！", "Contents"));
                 pnl.Controls.Add(CreateTextBox("SendTime", DateTime.Now.ToString(), "SendTime"));
                 pnl.Controls.Add(CreateTextBox(null, "NULL", "ReadTime")); // 拼接SQL
-                pnl.Controls.Add(CreateTextBox("@Category", "问候", "Category"));
+                pnl.Controls.Add(CreateTextBox("Category", "问候", "Category"));
                 var args = pnl.CreateParameters<SqlParameter>();
-                string build_sql = args.BuildInsertSql(TABLE_NAME);
-                string get_sql = args.GetInsertSql(TABLE_NAME);
+                string build_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
+                string get_sql = args.GetInsertSql(Factory.LETTER_TABLE);
+                conn.ExecuteNonQuery(build_sql, args);
+                conn.ExecuteNonQuery(get_sql);
             }
             
         }

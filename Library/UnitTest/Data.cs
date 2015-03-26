@@ -17,8 +17,6 @@ namespace UnitTest
     {
         public const string CONNECTION_STRING = "UnitTest";
 
-        public const string TABLE_NAME = "Profile";
-
         public Data()
         {
             //
@@ -97,7 +95,7 @@ namespace UnitTest
                  (FromName, ToName, Title, Contents, SendTime, ReadTime, Category) 
                  VALUES (@FromName, @ToName, @Title, @Contents, @SendTime, NULL, @Category)
                  */
-                //int result = conn.ExecuteNonQuery(insert_sql, args);
+                int result = conn.ExecuteNonQuery(insert_sql, args);
             }
             
         }
@@ -105,9 +103,15 @@ namespace UnitTest
         [TestMethod]
         public void ExectueDeleteSql()
         {
-            using (SqlConnection conn = new SqlConnection())
+            using (SqlConnection conn = Factory.CreateConnection())
             {
-                
+                var args = Factory.CreateParameters();
+                args.Add(new SqlParameter("@Title", "Hi") { SourceColumn = "Title =" });
+                args.Add(new SqlParameter("@Content", "%？！") { SourceColumn = "Contents LIKE" });
+                args.Add(new SqlParameter("", "Contents IS NULL")); // 拼接SQL
+                string conditions = args.GetConditionSql();
+                string delete_sql = String.Format("DELETE FROM {0} WHERE {1}", Factory.LETTER_TABLE, conditions);
+                conn.ExecuteNonQuery(delete_sql);
             }
         }
 

@@ -25,7 +25,7 @@ namespace Utility.Data
         {
             System.Data.IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = sql;
-            EDbConnection.add_parameter(cmd, args, notinput);
+            EDbConnection.add_parameter(cmd, args, notinput, 0);
             if (cmd.CommandType != CommandType.StoredProcedure && sql.IndexOf(Utility.Core.Assist.WHITE_SPACE, 0) == -1)
                 cmd.CommandType = CommandType.StoredProcedure;
             return cmd;
@@ -39,16 +39,18 @@ namespace Utility.Data
         /// <param name="args"></param>
         /// <param name="notinput"></param>
         /// <returns></returns>
-        private static T add_parameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput) where T : System.Data.IDbCommand
+        private static T add_parameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput, int increment) where T : System.Data.IDbCommand
         {
             foreach (var item in args)
             {
                 if (item == null)
                     continue;
                 else if (item is IEnumerable<object>)
-                    EDbConnection.add_parameter(cmd, item as IEnumerable<object>, notinput);
+                    EDbConnection.add_parameter(cmd, item as IEnumerable<object>, notinput, increment);
                 else if (item is IDataParameter)
                     EDbConnection.add_parameter(cmd, item as IDataParameter, notinput);
+                else
+                    EDbConnection.add_parameter(cmd, item, increment++);
             }
             return cmd;
         }
@@ -72,6 +74,14 @@ namespace Utility.Data
                 notinput.Add(param, arg);
             }
             cmd.Parameters.Add(arg);
+        }
+
+        private static void add_parameter<T>(T cmd, object o, int increment) where T : System.Data.IDbCommand
+        {
+            IDataParameter param = cmd.CreateParameter();
+            param.ParameterName = "@" + increment;
+            param.Value = o;
+            cmd.Parameters.Add(param);
         }
 
         /// <summary>
@@ -379,11 +389,6 @@ namespace Utility.Data
         public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
             return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
-        }
-
-        public static int NumberNonQuery<T>(this T conn, string sql, params object[] args) where T : IDbConnection
-        {
-            List<IDataParameter> list = new List<IDataParameter>();
         }
 
     }
