@@ -1,0 +1,12 @@
+﻿using System;
+using System.Data;
+
+namespace Temp
+{
+	<%
+		Dictionary<string, string> mapping = new Dictionary()
+		{
+			{"Letter", "ID"}
+		};
+	 %>
+}

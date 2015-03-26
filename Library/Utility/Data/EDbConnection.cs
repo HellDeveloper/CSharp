@@ -253,11 +253,37 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static int ExecuteNonQuery<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_non_query);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
         /// <returns></returns>
         public static object ExecuteScalar<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_scalar);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static object ExecuteScalar<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
             return EDbConnection.execute(conn, sql, args, EDbConnection.execute_scalar);
         }
@@ -285,6 +311,21 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Result"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="func"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static Result ExecuteReader<T, Result>(this T conn, string sql, Func<IDataReader, Result> func, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.ExecuteReader(conn, sql, args, func);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
@@ -304,6 +345,20 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="behavior"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, CommandBehavior behavior = CommandBehavior.CloseConnection, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.ExecuteGetDataReader(conn, sql, args, behavior);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
@@ -312,6 +367,25 @@ namespace Utility.Data
         {
             return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        {
+            return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
+        }
+
+        public static int NumberNonQuery<T>(this T conn, string sql, params object[] args) where T : IDbConnection
+        {
+            List<IDataParameter> list = new List<IDataParameter>();
+        }
+
     }
 
 }

@@ -6,12 +6,16 @@ using System.Text;
 using Utility.Generic;
 using Utility.Core;
 using Utility.Data;
+using System.Web;
+using System.Security.Cryptography;
 
 namespace UnitTest
 {
     [TestClass]
     public class Core
     {
+
+        public const string str = "123456";
 
         public Core()
         {
@@ -80,5 +84,28 @@ namespace UnitTest
             // result:
             // str = "A1A3A5A7"
         }
+
+        [TestMethod]
+        public void Aes()
+        {
+            string original = "Here is some data to encrypt";
+            using (AesCryptoServiceProvider aes = new AesCryptoServiceProvider())
+            {
+                byte[] encrypted = Security.AesEncrypt(original, aes.Key, aes.IV);
+                string roundtrip = Security.AesDecrypt(encrypted, aes.Key, aes.IV);
+            }
+        }
+
+        [TestMethod]
+        public void Des()
+        {
+            string original = "Here is some data to encrypt";
+            using (TripleDESCryptoServiceProvider des = new TripleDESCryptoServiceProvider())
+            {
+                byte[] encrypted = Security.DesEncrypt(original, des.Key, des.IV);
+                string roundtrip = Security.DesDecrypt(encrypted, des.Key, des.IV);
+            }
+        }
+
     }
 }

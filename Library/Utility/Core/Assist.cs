@@ -55,6 +55,7 @@ namespace Utility.Core
         /// 获取第一个空格前面的字符
         /// <param name="str"></param>
         /// <returns></returns>
+        /// </summary>
         public static string GetBeforeFirstWhiteSpace(string str)
         {
             if (String.IsNullOrWhiteSpace(str))
