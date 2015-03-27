@@ -138,7 +138,7 @@ namespace UnitTest
                     sql = String.Format("SELECT * FROM {0}", Factory.LETTER_TABLE);
                 else
                     sql = String.Format("SELECT * FROM {0} WHERE {1}", Factory.LETTER_TABLE, conditions);
-                DataTable dt = conn.ExecuteGetDataTable(sql, list);
+                DataTable dt = conn.ExecuteDataTable(sql, list);
             }
         }
 

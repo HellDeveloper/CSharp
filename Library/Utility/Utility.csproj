@@ -49,7 +49,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TryTo.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\TDbConnection.cs" />
+    <Compile Include="Data\EDbConnection.cs" />
     <Compile Include="Generic\Comparable.cs" />
     <Compile Include="Generic\Comparer.cs" />
     <Compile Include="Generic\ECollection.cs" />
@@ -61,7 +61,6 @@
       <DependentUpon>TypeTool.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\EDataParameter.cs" />
-    <Compile Include="Data\EDbConnection.cs" />
     <Compile Include="Data\Sql.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebForm\ControlTool.cs" />
