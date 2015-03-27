@@ -11,7 +11,7 @@ using System.Data;
 namespace UnitTest
 {
     /// <summary>
-    /// SQL 的摘要说明
+    /// 测试命名空间Utility.Data
     /// </summary>
     [TestClass]
     public class Data
