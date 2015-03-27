@@ -9,7 +9,7 @@ namespace Utility.Data
     /// <summary>
     /// 
     /// </summary>
-    public static partial class TDbConnection
+    public static partial class EDbConnection
     {
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Utility.Data
         {
             System.Data.IDbCommand cmd = conn.CreateCommand();
             cmd.CommandText = sql;
-            TDbConnection.add_parameter(cmd, args, notinput, 0);
+            EDbConnection.add_parameter(cmd, args, notinput, 0);
             if (cmd.CommandType != CommandType.StoredProcedure && sql.IndexOf(Utility.Core.Assist.WHITE_SPACE, 0) == -1)
                 cmd.CommandType = CommandType.StoredProcedure;
             return cmd;
@@ -38,7 +38,6 @@ namespace Utility.Data
         /// <param name="cmd"></param>
         /// <param name="args"></param>
         /// <param name="notinput"></param>
-        /// <param name="increment"></param>
         /// <returns></returns>
         private static T add_parameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput, int increment) where T : System.Data.IDbCommand
         {
@@ -47,11 +46,11 @@ namespace Utility.Data
                 if (item == null)
                     continue;
                 else if (item is IEnumerable<object>)
-                    TDbConnection.add_parameter(cmd, item as IEnumerable<object>, notinput, increment);
+                    EDbConnection.add_parameter(cmd, item as IEnumerable<object>, notinput, increment);
                 else if (item is IDataParameter)
-                    TDbConnection.add_parameter(cmd, item as IDataParameter, notinput);
+                    EDbConnection.add_parameter(cmd, item as IDataParameter, notinput);
                 else
-                    TDbConnection.add_parameter(cmd, item, increment++);
+                    EDbConnection.add_parameter(cmd, item, increment++);
             }
             return cmd;
         }
@@ -104,18 +103,18 @@ namespace Utility.Data
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
-        /// <param name="get_result"></param>
+        /// <param name="func"></param>
         /// <returns></returns>
-        private static Result run<T, Data, Result>(T conn, string sql, IEnumerable<object> args, Func<T, string, IEnumerable<object>, Dictionary<IDataParameter, IDataParameter>, IDbCommand> create_cmd, Func<System.Data.IDbCommand, Data, Result> get_result, Data data) where T : System.Data.IDbConnection
+        private static Result execute<T, Result>(T conn, string sql, IEnumerable<object> args, Func<System.Data.IDbCommand, Result> func) where T : System.Data.IDbConnection
         {
             Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput = new Dictionary<IDataParameter, IDataParameter>();
             bool need_close = conn.State == ConnectionState.Closed;
-            System.Data.IDbCommand cmd = create_cmd(conn, sql, args, notinput);
-            TDbConnection.OpenConnection(conn);
-            Result temp = get_result.Invoke(cmd, data);
-            if (need_close && !(temp is IDataReader))
-                TDbConnection.CloseConnection(conn);
-            TDbConnection.clear_not_input(notinput);
+            System.Data.IDbCommand cmd = EDbConnection.create_command(conn, sql, args, notinput);
+            EDbConnection.OpenConnection(conn);
+            Result temp = func.Invoke(cmd);
+            if (need_close)
+                EDbConnection.CloseConnection(conn);
+            EDbConnection.clear_not_input(notinput);
             cmd.Parameters.Clear();
             return temp;
         }
@@ -125,7 +124,7 @@ namespace Utility.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        private static int non_query<T>(T cmd, string str) where T : System.Data.IDbCommand
+        private static int execute_non_query<T>(T cmd) where T : System.Data.IDbCommand
         {
             return cmd.ExecuteNonQuery();
         }
@@ -135,14 +134,9 @@ namespace Utility.Data
         /// </summary>
         /// <param name="cmd"></param>
         /// <returns></returns>
-        private static object scalar<T>(T cmd, string str) where T : System.Data.IDbCommand
+        private static object execute_scalar<T>(T cmd) where T : System.Data.IDbCommand
         {
             return cmd.ExecuteScalar();
-        }
-
-        private static IDataReader reader<T>(T cmd, CommandBehavior behavior) where T : System.Data.IDbCommand
-        {
-            return cmd.ExecuteReader(behavior);
         }
 
         /// <summary>
@@ -170,7 +164,7 @@ namespace Utility.Data
     /// <summary>
     /// 
     /// </summary>
-    public static partial class TDbConnection
+    public static partial class EDbConnection
     {
 
         /// <summary>
@@ -234,7 +228,7 @@ namespace Utility.Data
             DataTable table = new DataTable();
             List<int> list = new List<int>();
             for (int i = 0; i < reader.FieldCount; i++)
-                if (TDbConnection.try_add_column(table, reader.GetName(i)))
+                if (EDbConnection.try_add_column(table, reader.GetName(i)))
                     list.Add(i);
             while (reader.Read())
             {
@@ -252,7 +246,7 @@ namespace Utility.Data
     /// <summary>
     /// 
     /// </summary>
-    public static partial class TDbConnection
+    public static partial class EDbConnection
     {
         /// <summary>
         /// ExecuteNonQuery
@@ -263,7 +257,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static int ExecuteNonQuery<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
         {
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.non_query, String.Empty);
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_non_query);
         }
 
         /// <summary>
@@ -276,7 +270,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static int ExecuteNonQuery<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.non_query, String.Empty);
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_non_query);
         }
 
         /// <summary>
@@ -288,7 +282,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static object ExecuteScalar<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
         {
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.scalar, String.Empty);
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_scalar);
         }
 
         /// <summary>
@@ -301,22 +295,23 @@ namespace Utility.Data
         /// <returns></returns>
         public static object ExecuteScalar<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.scalar, String.Empty);
+            return EDbConnection.execute(conn, sql, args, EDbConnection.execute_scalar);
         }
 
         /// <summary>
         /// 
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="Result"></typeparam>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
-        /// <param name="behavior"></param>
+        /// <param name="func"></param>
         /// <returns></returns>
-<<<<<<< HEAD
-        private static Result execute_reader<T, Result>(this T conn, string sql, IEnumerable<object> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
+        public static Result ExecuteReader<T, Result>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
         {
             CommandBehavior behavior = conn.State == ConnectionState.Closed ? CommandBehavior.CloseConnection : CommandBehavior.Default;
-            IDataReader reader = EDbConnection.execute_get_datareader(conn, sql, args, behavior);
+            IDataReader reader = EDbConnection.ExecuteGetDataReader(conn, sql, args, behavior);
             Result temp = func(reader);
             if (!reader.IsClosed)
                 reader.Close();
@@ -330,73 +325,31 @@ namespace Utility.Data
         /// <typeparam name="Result"></typeparam>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
-        /// <param name="args"></param>
         /// <param name="func"></param>
-        /// <returns></returns>
-        public static Result ExecuteReader<T, Result>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
-=======
-        public static IDataReader ExecuteReader<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
->>>>>>> origin/master
-        {
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.reader, behavior);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="sql"></param>
-        /// <param name="behavior"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        public static IDataReader ExecuteReader<T>(this T conn, string sql, CommandBehavior behavior = CommandBehavior.CloseConnection, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        public static Result ExecuteReader<T, Result>(this T conn, string sql, Func<IDataReader, Result> func, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-<<<<<<< HEAD
-            return EDbConnection.execute_reader(conn, sql, args, func);
-=======
-            return TDbConnection.run(conn, sql, args, TDbConnection.create_command, TDbConnection.reader, behavior);
->>>>>>> origin/master
+            return EDbConnection.ExecuteReader(conn, sql, args, func);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="Result"></typeparam>
         /// <param name="conn"></param>
         /// <param name="sql"></param>
-        /// <param name="args"></param>
-        /// <param name="func"></param>
-        /// <returns></returns>
-<<<<<<< HEAD
-        private static IDataReader execute_get_datareader<T>(this T conn, string sql, IEnumerable<object> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
-=======
-        public static Result ExecuteReader<T, Result>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, Func<IDataReader, Result> func) where T : System.Data.IDbConnection
->>>>>>> origin/master
-        {
-            CommandBehavior behavior = conn.State == ConnectionState.Closed ? CommandBehavior.CloseConnection : CommandBehavior.Default;
-            IDataReader reader = TDbConnection.ExecuteReader(conn, sql, args, behavior);
-            Result temp = func(reader);
-            if (!reader.IsClosed)
-                reader.Close();
-            return temp; 
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="Result"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="sql"></param>
-<<<<<<< HEAD
         /// <param name="args"></param>
         /// <param name="behavior"></param>
         /// <returns></returns>
         public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args, CommandBehavior behavior = CommandBehavior.CloseConnection) where T : System.Data.IDbConnection
         {
-            return EDbConnection.execute_get_datareader(conn, sql, args, behavior);
+            Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput = new Dictionary<IDataParameter, IDataParameter>();
+            System.Data.IDbCommand cmd = EDbConnection.create_command(conn, sql.Trim(), args, notinput);
+            EDbConnection.OpenConnection(conn);
+            IDataReader temp = cmd.ExecuteReader(behavior);
+            EDbConnection.clear_not_input(notinput);
+            cmd.Parameters.Clear();
+            return temp;
         }
 
         /// <summary>
@@ -406,21 +359,12 @@ namespace Utility.Data
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="behavior"></param>
-=======
-        /// <param name="func"></param>
->>>>>>> origin/master
         /// <param name="args"></param>
         /// <returns></returns>
-        public static Result ExecuteReader<T, Result>(this T conn, string sql, Func<IDataReader, Result> func, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
+        public static IDataReader ExecuteGetDataReader<T>(this T conn, string sql, CommandBehavior behavior = CommandBehavior.CloseConnection, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-<<<<<<< HEAD
-            return EDbConnection.execute_get_datareader(conn, sql, args, behavior);
-=======
-            return TDbConnection.ExecuteReader(conn, sql, args, func);
->>>>>>> origin/master
+            return EDbConnection.ExecuteGetDataReader(conn, sql, args, behavior);
         }
-
-        
 
         /// <summary>
         /// 
@@ -431,24 +375,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, IEnumerable<System.Data.IDataParameter> args) where T : System.Data.IDbConnection
         {
-<<<<<<< HEAD
-            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="sql"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, IEnumerable<IEnumerable<System.Data.IDataParameter>> args) where T : System.Data.IDbConnection
-        {
-            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable); 
-=======
-            return TDbConnection.ExecuteReader(conn, sql, args, TDbConnection.IDataReaderToDataTable);
->>>>>>> origin/master
+            return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
 
         /// <summary>
@@ -461,11 +388,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static DataTable ExecuteGetDataTable<T>(this T conn, string sql, params System.Data.IDataParameter[] args) where T : System.Data.IDbConnection
         {
-<<<<<<< HEAD
-            return EDbConnection.execute_reader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
-=======
-            return TDbConnection.ExecuteReader(conn, sql, args, TDbConnection.IDataReaderToDataTable);
->>>>>>> origin/master
+            return EDbConnection.ExecuteReader(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
 
     }
