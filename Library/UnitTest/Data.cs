@@ -142,16 +142,17 @@ namespace UnitTest
                 };
                 list[0].Add(new SqlParameter("@Title", "Hi") { SourceColumn = "Title =" });
                 list[0].Add(new SqlParameter("@Content1", "%？！") { SourceColumn = "Contents LIKE" });
-                list[0].Add(new SqlParameter("", "Contents IS NULL")); // 拼接SQL
+                list[0].Add(new SqlParameter("", "Contents IS NOT NULL")); // 拼接SQL
                 list[1].Add(new SqlParameter("@Title2", "Hi") { SourceColumn = "Title =" });
                 list[1].Add(new SqlParameter("@Content2", "%？！") { SourceColumn = "Contents LIKE" });
-                list[1].Add(new SqlParameter("", "Contents IS NULL")); // 拼接SQL
+                list[1].Add(new SqlParameter("", "Contents IS NOT NULL")); // 拼接SQL
                 string conditions = list.GetConditionSql();
                 string sql = String.Empty;
                 if (String.IsNullOrWhiteSpace(conditions))
                     sql = String.Format("SELECT * FROM {0}", Factory.LETTER_TABLE);
                 else
                     sql = String.Format("SELECT * FROM {0} WHERE {1}", Factory.LETTER_TABLE, conditions);
+                sql = conn.Limit(sql, 50, "ID", 10);
                 DataTable dt = conn.ExecuteDataTable(sql, list);
             }
         }

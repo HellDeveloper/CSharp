@@ -146,7 +146,7 @@ namespace Utility.Data
         /// <param name="table_name"></param>
         /// <param name="func"></param>
         /// <returns></returns>
-        public static string InsertSql(IEnumerable<IDataParameter> args, string table_name, Func<IDataParameter, object> func) 
+        public static string InsertSql(IEnumerable<IDataParameter> args, string table_name, Func<IDataParameter, object> func)
         {
             var tuple = EEnumerable.ToStringBuilder(args, Sql.GetFieldName, func, ", ");
             return String.Format("INSERT INTO {0} ({1}) VALUES ({2})", table_name, tuple.Item1, tuple.Item2);
@@ -295,7 +295,7 @@ namespace Utility.Data
         {
             return Sql.InsertSql(args as IEnumerable<IDataParameter>, table_name, Sql.BuildParameterValue);
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -309,11 +309,11 @@ namespace Utility.Data
         }
 
         /// <summary>
-        /// 
+        /// 构建删除的SQL语句
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="table_name"></param>
-        /// <returns></returns>
+        /// <param name="table_name">表名</param>
+        /// <returns>SQL语句</returns>
         public static string BuildDeleteSql(this IEnumerable<IDataParameter> args, string table_name)
         {
             return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
@@ -322,13 +322,63 @@ namespace Utility.Data
         /// <summary>
         /// 限制查询 必须是SQL Server 2005 以上
         /// </summary>
-        /// <param name="select_sql"></param>
-        /// <param name="index"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
-        public static string LimitOfSqlServer(string select_sql, int index, int count)
+        /// <param name="select_sql">查询的SQL语句</param>
+        /// <param name="startIndex">开始的索引（从零开始）</param>
+        /// <param name="count">拿多少条</param>
+        /// <param name="orderBy">排序SQL语句（不需要写 order by 关键字）</param>
+        /// <returns>新的查询语句</returns>
+        public static string LimitOfSqlServerRowNumber(string select_sql, int startIndex, int count = 10, string orderBy = "ID ASC")
         {
-            return null;
+            var i = select_sql.IndexOf(Assist.WHITE_SPACE);
+            //if (i < 0 || String.IsNullOrWhiteSpace(orderBy))
+            //    return null;
+            string format = "SELECT * FROM (SELECT ROW_NUMBER () OVER (ORDER BY {1}) AS ___RowID, {0}) as ___temp WHERE ___RowID >= {2} AND ___RowID < {3}";
+            return String.Format(format, select_sql.Substring(i, select_sql.Length - i), orderBy, startIndex + 1, startIndex + count + 1);
+        }
+
+        /// <summary>
+        /// 限制查询 (TOP NOT IN)最老版本
+        /// </summary>
+        /// <param name="select_sql">查询的SQL语句</param>
+        /// <param name="startIndex">开始的索引（从零开始）</param>
+        /// <param name="count">拿多少条</param>
+        /// <param name="select_field">not in 的 字段</param>
+        /// <returns>新的查询语句</returns>
+        public static string LimitOfSqlServerTopNotIn(string select_sql, int startIndex, string select_field, int count = 10)
+        {
+            var i = select_sql.IndexOf(Assist.WHITE_SPACE);
+            //if (i < 0 || String.IsNullOrWhiteSpace(orderBy))
+            //    return null;
+            string format = "SELECT TOP {3} * FROM ({0}) as ___tempo WHERE {1} NOT IN (SELECT TOP {2} {1} FROM ({0}) AS ___tempi)";
+            return String.Format(format, select_sql, select_field, startIndex, count);
+        }
+
+        /// <summary>
+        /// 限制查询 必须是SQL Server 2005 以上 (ROW_NUMBER)
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="select_sql">查询的SQL语句</param>
+        /// <param name="startIndex">开始的索引（从零开始）</param>
+        /// <param name="count">拿多少条</param>
+        /// <param name="orderBy">排序SQL语句（不需要写 order by 关键字）</param>
+        /// <returns>新的查询语句</returns>
+        public static string Limit(this System.Data.SqlClient.SqlConnection conn, string select_sql, int startIndex, int count, string orderBy = "ID ASC")
+        {
+            return Sql.LimitOfSqlServerRowNumber(select_sql, startIndex, count, orderBy);
+        }
+
+        /// <summary>
+        /// 限制查询 (TOP NOT IN)最老版本
+        /// </summary>
+        /// <param name="conn"></param>
+        /// <param name="select_sql">查询的SQL语句</param>
+        /// <param name="startIndex">开始的索引（从零开始）</param>
+        /// <param name="count">拿多少条</param>
+        /// <param name="select_field">not in 的 字段</param>
+        /// <returns>新的查询语句</returns>
+        public static string Limit(this System.Data.SqlClient.SqlConnection conn, string select_sql, int startIndex, string select_field = "ID", int count = 10)
+        {
+            return Sql.LimitOfSqlServerTopNotIn(select_sql, startIndex, select_field, count);
         }
         #endregion
     }
