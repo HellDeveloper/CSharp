@@ -68,8 +68,6 @@ namespace UnitTest
         //
         #endregion
 
-        
-
         [TestMethod]
         public void SetConnectionString()
         {
