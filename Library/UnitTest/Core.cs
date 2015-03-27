@@ -107,5 +107,20 @@ namespace UnitTest
             }
         }
 
+        [TestMethod]
+        public void SHA1()
+        {
+            var result = Security.SHA1Encrypt(str);
+        }
+
+        [TestMethod]
+        public void RSA()
+        {
+            string public_key, private_key;
+            Security.RSAKey(out private_key, out public_key);
+            var bytes = Security.RSAEncrypt(public_key, str);
+            var result = Security.RSADecrypt(private_key, bytes);
+        }
+
     }
 }

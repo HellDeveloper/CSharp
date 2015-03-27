@@ -11,8 +11,7 @@ namespace Utility.Core
     /// </summary>
     public static class Security
     {
-
-        #region
+        #region 不可逆
         private static string hash_encrypt<T>(string source) where T : System.Security.Cryptography.HashAlgorithm, new()
         {
             using (T t = new T())
@@ -24,11 +23,9 @@ namespace Utility.Core
                 return builder.ToString();
             }
         }
-        #endregion
 
-        #region MD5
         /// <summary>
-        /// MD5加密
+        /// 不可逆
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
@@ -38,7 +35,7 @@ namespace Utility.Core
         }
 
         /// <summary>
-        /// 
+        /// 不可逆
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
@@ -46,8 +43,37 @@ namespace Utility.Core
         {
             return hash_encrypt<System.Security.Cryptography.SHA1CryptoServiceProvider>(source);
         }
-        #endregion
 
+        /// <summary>
+        /// 不可逆
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string SHA256Encrypt(string source)
+        {
+            return hash_encrypt<System.Security.Cryptography.SHA256CryptoServiceProvider>(source);
+        }
+
+        /// <summary>
+        /// 不可逆
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string SHA384Encrypt(string source)
+        {
+            return hash_encrypt<System.Security.Cryptography.SHA384CryptoServiceProvider>(source);
+        }
+
+        /// <summary>
+        /// 不可逆
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static string SHA512Encrypt(string source)
+        {
+            return hash_encrypt<System.Security.Cryptography.SHA512CryptoServiceProvider>(source);
+        }
+        #endregion
 
         #region SymmetricAlgorithm
         private static byte[] symmetric_encrypt<T>(string plainText, byte[] key, byte[] iv) where T : System.Security.Cryptography.SymmetricAlgorithm, new()
@@ -151,7 +177,6 @@ namespace Utility.Core
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="cipherText"></param>
         /// <param name="key"></param>
         /// <param name="iv"></param>
@@ -176,43 +201,20 @@ namespace Utility.Core
         }
 
         /// <summary>
-        /// 
+        /// RSA加密算法比较耗时
         /// </summary>
         /// <param name="xmlPublicKey"></param>
         /// <param name="m_strEncryptString"></param>
         /// <returns></returns>
-        public static string RSAEncrypt(string xmlPublicKey, string m_strEncryptString)
-        {
-            return Security.RSAEncrypt(xmlPublicKey, new UnicodeEncoding().GetBytes(m_strEncryptString));
-        }
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="xmlPublicKey"></param>
-        /// <param name="EncryptString"></param>
-        /// <returns></returns>
-        public static string RSAEncrypt(string xmlPublicKey, byte[] EncryptString)
+        public static byte[] RSAEncrypt(string xmlPublicKey, string m_strEncryptString)
         {
             System.Security.Cryptography.RSACryptoServiceProvider rsa = new System.Security.Cryptography.RSACryptoServiceProvider();
             rsa.FromXmlString(xmlPublicKey);
-            return Convert.ToBase64String(rsa.Encrypt(EncryptString, false));
+            return rsa.Encrypt(new UnicodeEncoding().GetBytes(m_strEncryptString), false);
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="xmlPrivateKey"></param>
-        /// <param name="m_strDecryptString"></param>
-        /// <returns></returns>
-        public static string RSADecrypt(string xmlPrivateKey, string m_strDecryptString)
-        {
-            return Security.RSADecrypt(xmlPrivateKey, new UnicodeEncoding().GetBytes(m_strDecryptString));
-
-        }
-
-        /// <summary>
-        /// 
+        /// RSA加密算法比较耗时
         /// </summary>
         /// <param name="xmlPrivateKey"></param>
         /// <param name="DecryptString"></param>
