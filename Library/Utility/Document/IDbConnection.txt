@@ -10,3 +10,7 @@
 
 // GetDataTable
 // 如果有相同的列名，取第一列
+
+
+IDbConnection 没有 Limit 扩展方法
+SqlConnection 有 2 个 Limit 的扩展方法 ROW_NUMBER 和 TOP NOT IN (2012暂未支持)

@@ -318,7 +318,9 @@ namespace Utility.Data
         {
             return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
         }
+        #endregion
 
+        #region Limit
         /// <summary>
         /// 限制查询 必须是SQL Server 2005 以上
         /// </summary>
