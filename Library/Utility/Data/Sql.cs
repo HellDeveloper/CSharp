@@ -318,6 +318,18 @@ namespace Utility.Data
         {
             return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
         }
+
+        /// <summary>
+        /// 限制查询 必须是SQL Server 2005 以上
+        /// </summary>
+        /// <param name="select_sql"></param>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static string LimitOfSqlServer(string select_sql, int index, int count)
+        {
+            return null;
+        }
         #endregion
     }
 
