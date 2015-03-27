@@ -3,10 +3,11 @@
 // 没找到会抛NullReferenceException
 
 
-// Execute...方法，GetDataTable，GetDataReader
+// Execute...方法
 // 如果执行前是打开状态，执行完还是打开状态，不会多手帮你关闭
 // 如果执行前是关闭状态或者中断状态，执行完是关闭状态
 
+// Number...方法， @0, @1
 
 // GetDataTable
 // 如果有相同的列名，取第一列
