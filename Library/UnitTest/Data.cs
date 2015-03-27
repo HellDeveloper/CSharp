@@ -83,13 +83,13 @@ namespace UnitTest
             using (var conn = Factory.CreateConnection())
             {
                 var args = Factory.CreateParameters();
-                args.Add("@FromName", "Tom", "FromName");
-                args.Add("@ToName", "Mary", "ToName");
-                args.Add("@Title", "Hi", "Title");
-                args.Add("@Contents", "最近过得怎么样？！", "Contents");
-                args.Add("@SendTime", DateTime.Now, "SendTime");
+                args.Add("@FromName", "Jack", "FromName =");
+                args.Add("@ToName", "Mary", "ToName =");
+                args.Add("@Title", "Hi", "Title =");
+                args.Add("@Contents", "最近过得怎么样？！", "Contents =");
+                args.Add("@SendTime", DateTime.Now, "SendTime =");
                 args.Add(null, "NULL", "ReadTime"); // 拼接SQL
-                args.Add("@Category", "问候", "Category");
+                args.Add("@Category", "问候", "Category =");
                 string insert_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
                 /*
                  INSERT INTO Letter 
@@ -97,8 +97,24 @@ namespace UnitTest
                  VALUES (@FromName, @ToName, @Title, @Contents, @SendTime, NULL, @Category)
                  */
                 int result = conn.ExecuteNonQuery(insert_sql, args);
+            }   
+        }
+
+        [TestMethod]
+        public void ExecuteUpdateSql()
+        {
+            using (var conn = Factory.CreateConnection())
+            {
+                var args = Factory.CreateParameters();
+                args.Add("@ReadTime", DateTime.Now, "ReadTime =");
+                args.Add("", "'Kate'", "FromName ="); // 拼接SQL, ParameterName is null or whitespace
+                var where = Factory.CreateParameters();
+                where.Add("@FromName", "Jack", "FromName =");
+                where.Add("", "ReadTime IS NULL", "");// 拼接SQL, ParameterName is null or whitespace
+                string update_sql = args.BuildUpdateSql(Factory.LETTER_TABLE, where);
+                args.AddRange(where);
+                conn.ExecuteNonQuery(update_sql, args);
             }
-            
         }
 
         [TestMethod]
