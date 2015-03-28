@@ -68,21 +68,21 @@ namespace UnitTest
         #endregion
 
         [TestMethod]
-        public void TryToInt()
-        {
-            string s = "0x890"; // 
-            int try_to_int = s.TryToInt() ?? int.MinValue;
-            // int convert_int = Convert.ToInt32(s);
-            // 两个都转换失败，TryToInt 不抛异常，只返回null
-        }
-
-        [TestMethod]
         public void Replace()
         {
             string str = "01234567";
             Assist.Replace(str, 'A', 0, 2, 4, 6, 8, 10);
             // result:
             // str = "A1A3A5A7"
+        }
+
+        [TestMethod]
+        public void TryToInt()
+        {
+            string s = "0x890"; // 
+            int try_to_int = s.TryToInt() ?? int.MinValue;
+            // int convert_int = Convert.ToInt32(s);
+            // 两个都转换失败，TryToInt 不抛异常，只返回null
         }
 
         [TestMethod]
