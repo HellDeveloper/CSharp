@@ -6,6 +6,7 @@ using Utility.Core;
 
 namespace Utility.Data
 {
+    #region 核心
     /// <summary>
     /// 
     /// </summary>
@@ -48,7 +49,7 @@ namespace Utility.Data
             foreach (var item in args)
             { 
                 IDataParameter param = cmd.CreateParameter();
-                param.ParameterName = "@" + increment++;
+                param.ParameterName = Sql.ParameterNamePerfix + (increment++).ToString();
                 param.Value = item;
                 cmd.Parameters.Add(param);
             }
@@ -62,7 +63,6 @@ namespace Utility.Data
         /// <param name="cmd"></param>
         /// <param name="args"></param>
         /// <param name="notinput"></param>
-        /// <param name="increment"></param>
         /// <returns></returns>
         private static T add_parameter<T>(T cmd, IEnumerable<object> args, Dictionary<System.Data.IDataParameter, System.Data.IDataParameter> notinput) where T : System.Data.IDbCommand
         {
@@ -102,21 +102,6 @@ namespace Utility.Data
         /// <summary>
         /// 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cmd"></param>
-        /// <param name="o"></param>
-        /// <param name="increment"></param>
-        private static void add_parameter<T>(T cmd, object o, int increment) where T : System.Data.IDbCommand
-        {
-            IDataParameter param = cmd.CreateParameter();
-            param.ParameterName = "@" + increment;
-            param.Value = o;
-            cmd.Parameters.Add(param);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="notinput"></param>
         private static void clear_not_input(Dictionary<IDataParameter, IDataParameter> notinput)
         {
@@ -134,6 +119,7 @@ namespace Utility.Data
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="args"></param>
+        /// <param name="create_command"></param>
         /// <param name="func"></param>
         /// <param name="data"></param>
         /// <returns></returns>
@@ -259,28 +245,10 @@ namespace Utility.Data
         {
             return cmd.ExecuteReader(behavior);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="table"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private static bool try_add_column(DataTable table, string name)
-        {
-            try
-            {
-                table.Columns.Add(name);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
     }
+    #endregion
 
-
+    #region 辅助
     /// <summary>
     /// 
     /// </summary>
@@ -361,8 +329,29 @@ namespace Utility.Data
                 reader.Close();
             return table;
         }
-    }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="table"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static bool try_add_column(DataTable table, string name)
+        {
+            try
+            {
+                table.Columns.Add(name);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+    #endregion
+
+    #region execute 和 number   调用核心
     /// <summary>
     /// 
     /// </summary>
@@ -566,11 +555,27 @@ namespace Utility.Data
             return EDbConnection.execute(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int NumberNonQuery<T>(this T conn, string sql, IEnumerable<object> args) where T : System.Data.IDbConnection
         {
             return EDbConnection.number(conn, sql, args, EDbConnection.non_query, String.Empty);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="sql"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static int NumberNonQuery<T>(this T conn, string sql, params object[] args) where T : System.Data.IDbConnection
         {
             return EDbConnection.number(conn, sql, args, EDbConnection.non_query, String.Empty);
@@ -683,5 +688,18 @@ namespace Utility.Data
             return EDbConnection.number(conn, sql, args, EDbConnection.IDataReaderToDataTable);
         }
     }
+    #endregion
 
+    #region
+    /// <summary>
+    /// 
+    /// </summary>
+    public static partial class EDbConnection
+    {
+        //public DataTable GetByEquals(string tableName, string fieldName, object value)
+        //{
+        //    string sql = String.Format("SELECT * FROM ");
+        //}
+    }
+    #endregion
 }

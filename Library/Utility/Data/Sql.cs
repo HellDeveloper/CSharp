@@ -16,6 +16,22 @@ namespace Utility.Data
     {
         #region Help
         /// <summary>
+        /// 默认的参数名的前缀
+        /// </summary>
+        public const char DEFAULT_PARAMETER_NAME_PERFIX = '@';
+
+        /// <summary>
+        /// 参数名的前缀
+        /// </summary>
+        public static char ParameterNamePerfix
+        {
+            get 
+            {
+                return System.Configuration.ConfigurationManager.AppSettings["ParameterNamePerfix"].TryToChar() ?? Sql.DEFAULT_PARAMETER_NAME_PERFIX;
+            }
+        }
+        
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="param"></param>
@@ -381,6 +397,13 @@ namespace Utility.Data
         public static string Limit(this System.Data.SqlClient.SqlConnection conn, string select_sql, int startIndex, string select_field = "ID", int count = 10)
         {
             return Sql.LimitOfSqlServerTopNotIn(select_sql, startIndex, select_field, count);
+        }
+        #endregion
+
+        #region 快捷构建Sql
+        public static string SelectEuqals(string tableName, string fieldName, string parameterName)
+        {
+            return String.Format("SELECT * FROM {0} WHERE {1} = {2}");
         }
         #endregion
     }

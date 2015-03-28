@@ -3,16 +3,43 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ output extension=".txt" #>
+<#@ output extension=".cs" #>
 using System;
 using System.Data;
 
+using Utility.Generic;
+using Utility.Core;
+using Utility.Data;
+
+<#
+	string connection_type = "System.Data.SqlClient.SqlConnection";
+	Dictionary<string, string> mapping = new Dictionary<string, string>()
+	{
+		{"Letter", "ID"}
+	};
+#>
+/*
 namespace Temp
 {
-	<%
-		Dictionary<string, string> mapping = new Dictionary()
+<# foreach (var item in mapping) #>
+<# { #>
+	/// <summary>
+	/// <#=item.Key#>表
+	/// </summary>
+	public partial class <#=item.Key#>
+	{
+		public <#=item.Key#>(<#=connection_type #> conn)
 		{
-			{"Letter", "ID"}
-		};
-	 %>
+			this._connection = conn;
+		}
+
+		private <#=connection_type #> _connection;
+
+		public DataTable GetByPrimaryKey(object value)
+		{
+			
+		}
+	}
+<# } #>
 }
+*/

@@ -8,6 +8,7 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using Utility.Core;
+using Utility.Data;
 
 namespace Utility.WebForm
 {
@@ -55,7 +56,7 @@ namespace Utility.WebForm
             object value = GetValue(control);
             if (String.IsNullOrWhiteSpace(control.ID))
                 return CreateParameter<T>(null, value, fieldname);
-            return CreateParameter<T>("@" + control.ID, value, fieldname);
+            return CreateParameter<T>(Sql.ParameterNamePerfix + control.ID, value, fieldname);
         }
 
         /// <summary>
