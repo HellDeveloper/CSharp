@@ -84,7 +84,9 @@ namespace Utility.Data
         {
             if (String.IsNullOrWhiteSpace(param.ParameterName))
                 return param.Value == null ? null : param.Value.ToString();
-            return FormatSqlValue(param);
+            if (param.SourceVersion == DataRowVersion.Original && String.IsNullOrWhiteSpace(param.Value.TryToString()))
+                return "NULL";
+            return Sql.FormatSqlValue(param);
         }
 
         /// <summary>
@@ -96,6 +98,8 @@ namespace Utility.Data
         {
             if (String.IsNullOrWhiteSpace(param.ParameterName))
                 return param.Value == null ? null : param.Value.ToString();
+            if (param.SourceVersion == DataRowVersion.Original && String.IsNullOrWhiteSpace(param.Value.TryToString()))
+                return "NULL";
             return param.ParameterName;
         }
 

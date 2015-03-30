@@ -83,6 +83,8 @@ namespace Utility.WebForm
                 return (control as ITextControl).Text;
             else if (control is HtmlInputControl)
                 return (control as HtmlInputControl).Value;
+            else if (control is HtmlTextArea)
+                return (control as HtmlTextArea).Value;
             return String.Empty;
         }
 

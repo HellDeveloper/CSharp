@@ -20,11 +20,24 @@ namespace TestInWeb.Pages
 
         protected void btnSend_Click(object sender, EventArgs e)
         {
+            string snid = this.Request.QueryString["SNID"];
             var args = this.form1.CreateParameters<SqlParameter>();
-            args.Add("@Category", "I Don't Know", "Category");
-            args.Add("", "'" + DateTime.Now.Ticks + "'", "SNID"); // 拼接SQL
-            string sql = args.BuildInsertSql("Letter");
-            this.Connection.ExecuteNonQuery(sql, args);
+            if (String.IsNullOrWhiteSpace(snid)) // 插入
+            {
+                snid = System.DateTime.Now.Ticks.ToString();
+                args.Add("@Category", "I Don't Know", "Category");
+                args.Add("", "'" + snid + "'", "SNID"); // 拼接SQL
+                string sql = args.BuildInsertSql("Letter");
+                this.Connection.ExecuteNonQuery(sql, args);
+                this.form1.Action = "./SendLetter.aspx?SNID=" + snid;
+            }
+            else
+            {
+                List<SqlParameter> where = new List<SqlParameter>();
+                where.Add("@SNID", snid, "SNID =");
+                string sql = args.BuildUpdateSql("Letter", where);
+                this.Connection.ExecuteNonQuery(sql, args.Concat(where));
+            }
         }
 
     }

@@ -31,14 +31,14 @@ namespace Utility.Data
 
         #region 
         /// <summary>
-        /// 
+        /// 添加
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
-        /// <param name="parameterName"></param>
-        /// <param name="value"></param>
-        /// <param name="sourceColumn"></param>
-        /// <param name="direction"></param>
+        /// <param name="parameterName">参数名</param>
+        /// <param name="value">值</param>
+        /// <param name="sourceColumn">FieldName Comparer | 字段名 比较运算符</param>
+        /// <param name="direction">方向</param>
         /// <returns>返回已经添加到集合里</returns>
         public static T Add<T>(this ICollection<T> collection, string parameterName, object value, string sourceColumn, ParameterDirection direction = ParameterDirection.Input) where T : IDataParameter, new()
         {
