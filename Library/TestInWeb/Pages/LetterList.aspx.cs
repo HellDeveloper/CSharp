@@ -22,7 +22,7 @@ namespace TestInWeb.Pages
             }
         }
 
-        protected void BindingGridView()
+        protected void BindingGridView(int pageIndex = 0)
         {
             var args = this.pnlSearch.CreateParameters<SqlParameter>();
             args.RemoveByParameterName("@A");
@@ -38,12 +38,24 @@ namespace TestInWeb.Pages
             this.gv.DataBind();
         }
 
+        protected void gv_RowDataBound(Control control, string fieldname, object value)
+        {
+            if (fieldname == "SendTime" && control is ITextControl)
+            {
+                DateTime? dt = value.TryToString().TryToDateTime();
+                if (dt.HasValue)
+                {
+                    (control as ITextControl).Text = dt.Value.ToString("yyyy-MM-dd");
+                }
+            }
+        }
+
         protected void gv_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowIndex >= 0)
             {
                 DataTable dt = this.gv.DataSource as DataTable;
-                e.Row.FillData(dt.Rows[e.Row.RowIndex], null, 3);
+                e.Row.FillData(dt.Rows[e.Row.RowIndex], gv_RowDataBound);
             }
         }
 
@@ -60,6 +72,11 @@ namespace TestInWeb.Pages
         protected void gv_DataBinding(object sender, EventArgs e)
         {
 
+        }
+
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            this.BindingGridView();
         }
     }
 }

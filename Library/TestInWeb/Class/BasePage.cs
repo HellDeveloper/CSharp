@@ -24,5 +24,10 @@ namespace TestInWeb
             }
         }
 
+        protected override void InitializeCulture()
+        {
+            
+        }
+
     }
 }

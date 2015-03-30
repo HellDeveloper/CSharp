@@ -134,6 +134,7 @@ namespace Utility.Data
             to.ParameterName = from.ParameterName;
             to.SourceColumn = from.SourceColumn;
             to.Value = from.Value;
+            to.SourceVersion = from.SourceVersion;
             return to;
         }
 

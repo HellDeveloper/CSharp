@@ -22,6 +22,8 @@ namespace Utility.WebForm
         /// </summary>
         public const string DATA_FIELDNAME = "data-fieldname";
 
+        public const string DATA_DB_TYPE = "data-dbtype";
+
         /// <summary>
         /// 
         /// </summary>
@@ -45,9 +47,8 @@ namespace Utility.WebForm
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="control"></param>
-        /// <param name="emptyText">空文本是否也构建出来</param>
         /// <returns></returns>
-        public static T CreateParameter<T>(this Control control, bool emptyText = false) where T : class, IDataParameter, new()
+        public static T CreateParameter<T>(this Control control) where T : class, IDataParameter, new()
         {
             if (!(control is IAttributeAccessor))
                return null;
@@ -55,11 +56,20 @@ namespace Utility.WebForm
             if (fieldname == null)
                 return null;
             string value = GetValue(control);
-            if (emptyText == false && String.IsNullOrWhiteSpace(value))
-                return null;
+            T temp = null;
             if (String.IsNullOrWhiteSpace(control.ID))
-                return CreateParameter<T>(null, value, fieldname);
-            return CreateParameter<T>(Sql.ParameterNamePerfix + control.ID, value, fieldname);
+                temp = CreateParameter<T>(null, value, fieldname);
+            else
+                temp= CreateParameter<T>(Sql.ParameterNamePerfix + control.ID, value, fieldname);
+            DbType<T>(control, temp);
+            return temp;
+        }
+
+        private static void DbType<T>(Control control, T temp) where T : class, IDataParameter, new()
+        {
+            string dbtype = (control as IAttributeAccessor).GetAttribute(DATA_DB_TYPE);
+            if (String.Compare(dbtype, "date", true) == 0 && temp.GetComparer() == "<=")
+                temp.Value += " 23:59:59";
         }
 
         /// <summary>
@@ -83,14 +93,13 @@ namespace Utility.WebForm
         /// <param name="control"></param>
         /// <param name="func"></param>
         /// <param name="maxLevel"></param>
-        /// <param name="emptyText"></param>
         /// <returns></returns>
         public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2, bool emptyText = false) where T : class, IDataParameter, new()
         {
             List<T> list = new List<T>();
             if (0 > maxLevel)
                 return list;
-            create_parameters<T>(control, list, 1, maxLevel, func, emptyText);
+            create_parameters<T>(control, list, 1, maxLevel, func);
             return list;
         }
 
@@ -103,10 +112,9 @@ namespace Utility.WebForm
         /// <param name="currentLevel"></param>
         /// <param name="maxLevel"></param>
         /// <param name="func"></param>
-        /// <param name="emptyText">空文本是否也构建出来</param>
-        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null, bool emptyText = false) where T : class, IDataParameter, new()
+        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null) where T : class, IDataParameter, new()
         {
-            T t = CreateParameter<T>(control, emptyText);
+            T t = CreateParameter<T>(control);
             if (t != null)
             {
                 if (func != null)
@@ -116,7 +124,7 @@ namespace Utility.WebForm
             }
             if (currentLevel < maxLevel)
                 foreach (Control ctrl in control.Controls)
-                    create_parameters(ctrl, list, currentLevel + 1, maxLevel, func, emptyText);
+                    create_parameters(ctrl, list, currentLevel + 1, maxLevel, func);
         }
 
         /// <summary>
@@ -164,7 +172,7 @@ namespace Utility.WebForm
         /// <param name="row"></param>
         /// <param name="after_action">回调函数</param>
         /// <param name="maxLevel">递归的深度</param>
-        public static void FillData(this Control control, DataRow row, Action<Control, string, object> after_action = null, int maxLevel = 2)
+        public static void FillData(this Control control, DataRow row, Action<Control, string, object> after_action = null, int maxLevel = 3)
         {
             if (row.Table == null)
                 return;
