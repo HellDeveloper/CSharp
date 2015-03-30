@@ -309,7 +309,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildInsertSql(this IEnumerable<IDataParameter> args, string table_name)
         {
-            return Sql.InsertSql(args as IEnumerable<IDataParameter>, table_name, Sql.BuildParameterValue);
+            return Sql.InsertSql(args, table_name, Sql.BuildParameterValue);
         }
 
         /// <summary>
@@ -401,6 +401,13 @@ namespace Utility.Data
         #endregion
 
         #region 快捷构建Sql
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="fieldName"></param>
+        /// <param name="parameterName"></param>
+        /// <returns></returns>
         public static string SelectEuqals(string tableName, string fieldName, string parameterName)
         {
             return String.Format("SELECT * FROM {0} WHERE {1} = {2}");

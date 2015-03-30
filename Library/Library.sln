@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "Utility\Utility.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{73FEAA5A-422F-406A-8A8E-67B699DEB6EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInWeb", "TestInWeb\TestInWeb.csproj", "{13C5438C-3573-4124-AB5C-80839D4C12C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{73FEAA5A-422F-406A-8A8E-67B699DEB6EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73FEAA5A-422F-406A-8A8E-67B699DEB6EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73FEAA5A-422F-406A-8A8E-67B699DEB6EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13C5438C-3573-4124-AB5C-80839D4C12C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C5438C-3573-4124-AB5C-80839D4C12C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C5438C-3573-4124-AB5C-80839D4C12C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C5438C-3573-4124-AB5C-80839D4C12C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
