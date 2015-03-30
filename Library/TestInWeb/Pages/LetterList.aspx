@@ -16,6 +16,7 @@
         <input runat="server" id="BeginSendTime" placeholder="发送时间" data-fieldname="SendTime >="  />
         至
         <input runat="server" id="EndSendTime" placeholder="发送时间" data-fieldname="SendTime <="  />
+        <input runat="server" type="hidden" id="A" value="测试RemoveByParameterName" />
     </asp:Panel>
     <asp:GridView runat="server" ID="gv" OnRowDataBound="gv_RowDataBound" OnDataBinding="gv_DataBinding" OnDataBound="gv_DataBound" OnRowCreated="gv_RowCreated">
         <Columns>

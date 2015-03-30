@@ -41,19 +41,22 @@ namespace Utility.WebForm
         }
 
         /// <summary>
-        /// 
+        /// String.IsNullOrWhiteSpace(control.ID) parameterName = null;
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="control"></param>
+        /// <param name="emptyText">空文本是否也构建出来</param>
         /// <returns></returns>
-        public static T CreateParameter<T>(this Control control) where T : class, IDataParameter, new()
+        public static T CreateParameter<T>(this Control control, bool emptyText = false) where T : class, IDataParameter, new()
         {
             if (!(control is IAttributeAccessor))
                return null;
             string fieldname = ControlTool.GetDataFieldName(control);
             if (fieldname == null)
                 return null;
-            object value = GetValue(control);
+            string value = GetValue(control);
+            if (emptyText == false && String.IsNullOrWhiteSpace(value))
+                return null;
             if (String.IsNullOrWhiteSpace(control.ID))
                 return CreateParameter<T>(null, value, fieldname);
             return CreateParameter<T>(Sql.ParameterNamePerfix + control.ID, value, fieldname);
@@ -64,7 +67,7 @@ namespace Utility.WebForm
         /// </summary>
         /// <param name="control"></param>
         /// <returns></returns>
-        private static object GetValue(Control control)
+        private static string GetValue(Control control)
         {
             if (control is ITextControl)
                 return (control as ITextControl).Text;
@@ -80,13 +83,14 @@ namespace Utility.WebForm
         /// <param name="control"></param>
         /// <param name="func"></param>
         /// <param name="maxLevel"></param>
+        /// <param name="emptyText"></param>
         /// <returns></returns>
-        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2) where T : class, IDataParameter, new()
+        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2, bool emptyText = false) where T : class, IDataParameter, new()
         {
             List<T> list = new List<T>();
             if (0 > maxLevel)
                 return list;
-            create_parameters<T>(control, list, 1, maxLevel);
+            create_parameters<T>(control, list, 1, maxLevel, func, emptyText);
             return list;
         }
 
@@ -99,9 +103,10 @@ namespace Utility.WebForm
         /// <param name="currentLevel"></param>
         /// <param name="maxLevel"></param>
         /// <param name="func"></param>
-        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null) where T : class, IDataParameter, new()
+        /// <param name="emptyText">空文本是否也构建出来</param>
+        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null, bool emptyText = false) where T : class, IDataParameter, new()
         {
-            T t = CreateParameter<T>(control);
+            T t = CreateParameter<T>(control, emptyText);
             if (t != null)
             {
                 if (func != null)
@@ -111,7 +116,7 @@ namespace Utility.WebForm
             }
             if (currentLevel < maxLevel)
                 foreach (Control ctrl in control.Controls)
-                    create_parameters(ctrl, list, currentLevel + 1, maxLevel);
+                    create_parameters(ctrl, list, currentLevel + 1, maxLevel, func, emptyText);
         }
 
         /// <summary>

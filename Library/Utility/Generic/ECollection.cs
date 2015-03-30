@@ -51,10 +51,12 @@ namespace Utility.Generic
         /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="D"></typeparam>
+        /// <typeparam name="D0"></typeparam>
+        /// <typeparam name="D1"></typeparam>
         /// <param name="collection"></param>
         /// <param name="func"></param>
-        /// <param name="data"></param>
+        /// <param name="data0"></param>
+        /// <param name="data1"></param>
         /// <returns></returns>
         public static int RemoveBy<T, D0, D1>(this ICollection<T> collection, Func<T, D0, D1, bool> func, D0 data0, D1 data1)
         {

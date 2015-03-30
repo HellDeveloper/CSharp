@@ -58,6 +58,7 @@ namespace Utility.Data
         /// </summary>
         /// <param name="param"></param>
         /// <param name="parameterName"></param>
+        /// <param name="ignoreCase">是否区分大小写</param>
         /// <returns></returns>
         private static bool remove_by_parameter_name<T>(T param, string parameterName, bool ignoreCase = false) where T : IDataParameter
         {

@@ -25,6 +25,7 @@ namespace TestInWeb.Pages
         protected void BindingGridView()
         {
             var args = this.pnlSearch.CreateParameters<SqlParameter>();
+            args.RemoveByParameterName("@A");
             string condition = args.BuildConditionSql();
             string sql = String.Empty;
             if (String.IsNullOrWhiteSpace(condition))
