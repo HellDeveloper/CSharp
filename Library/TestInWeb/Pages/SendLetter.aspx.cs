@@ -29,9 +29,10 @@ namespace TestInWeb.Pages
                 args.Add("", "'" + snid + "'", "SNID"); // 拼接SQL
                 string sql = args.BuildInsertSql("Letter");
                 this.Connection.ExecuteNonQuery(sql, args);
+                this.btnSend.Text = "更新";
                 this.form1.Action = "./SendLetter.aspx?SNID=" + snid;
             }
-            else
+            else // 更新
             {
                 List<SqlParameter> where = new List<SqlParameter>();
                 where.Add("@SNID", snid, "SNID =");
