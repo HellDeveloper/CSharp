@@ -29,6 +29,7 @@ namespace Utility.Data
             get { return PARAMETER_NAME_PERFIX; }
         }
 
+        #region 
         /// <summary>
         /// 
         /// </summary>
@@ -51,6 +52,59 @@ namespace Utility.Data
             collection.Add(t);
             return t;
         }
+
+        /// <summary>
+        /// 移除匹配parameterName
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="parameterName"></param>
+        /// <returns></returns>
+        private static bool remove_by_parameter_name<T>(T param, string parameterName, bool ignoreCase = false) where T : IDataParameter
+        {
+            if (param == null)
+                return false;
+            return String.Compare(param.ParameterName, parameterName, ignoreCase) == 0;
+        }
+
+        /// <summary>
+        /// 移除匹配parameterName
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="parameterName"></param>
+        /// <param name="ignoreCase"></param>
+        /// <returns></returns>
+        public static int RemoveByParameterName<T>(this ICollection<T> collection, string parameterName, bool ignoreCase = false) where T : IDataParameter
+        {
+            return ECollection.RemoveBy(collection, remove_by_parameter_name, parameterName, ignoreCase);
+        }
+
+        /// <summary>
+        /// 移除匹配的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="param"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private static bool remove_by_value<T>(T param, object value) where T : IDataParameter
+        {
+            if (param == null)
+                return false;
+            return param.Value == value;
+        }
+
+        /// <summary>
+        /// 移除匹配的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int RemoveByValue<T>(this ICollection<T> collection, object value) where T : IDataParameter
+        {
+            return ECollection.RemoveBy(collection, remove_by_value, value);
+        }
+        #endregion
 
         /// <summary>
         /// 在SourceColumn获取比较运算符
