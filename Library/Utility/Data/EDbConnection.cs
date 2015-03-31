@@ -306,6 +306,17 @@ namespace Utility.Data
         }
 
         /// <summary>
+        /// MongoDB 生成 唯一 的 ID
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string MongoID<T>(this T conn) where T : System.Data.IDbConnection
+        {
+            return Assist.MongoID;
+        }
+
+        /// <summary>
         /// IDataReader 转 DataTable
         /// </summary>
         /// <param name="reader"></param>

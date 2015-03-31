@@ -13,6 +13,15 @@ namespace Utility.Core
     /// </summary>
     public static class Assist
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        static Assist()
+        {
+            _mongo_id = new MongoDBObjectID();
+            Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            Instance = new object();
+        }
 
         /// <summary>
         /// 空格
@@ -28,6 +37,32 @@ namespace Utility.Core
         /// yyyy-MM-dd HH:mm:ss
         /// </summary>
         public const string ISO_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+        /// <summary>
+        /// Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        /// </summary>
+        public static DateTime Epoch { get; private set; }
+
+        /// <summary>
+        /// Object 的实例（new Object()）
+        /// </summary>
+        public static readonly Object Instance;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static readonly MongoDBObjectID _mongo_id;
+
+        /// <summary>
+        /// MongoDB 生成 唯一 的 ID
+        /// </summary>
+        public static string MongoID
+        {
+            get
+            {
+                return _mongo_id.Generate();
+            }
+        }
 
         /// <summary>
         /// 返回参数

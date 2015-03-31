@@ -22,6 +22,9 @@ namespace Utility.WebForm
         /// </summary>
         public const string DATA_FIELDNAME = "data-fieldname";
 
+        /// <summary>
+        /// 
+        /// </summary>
         public const string DATA_DB_TYPE = "data-dbtype";
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace Utility.WebForm
         /// <param name="func"></param>
         /// <param name="maxLevel"></param>
         /// <returns></returns>
-        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2, bool emptyText = false) where T : class, IDataParameter, new()
+        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2) where T : class, IDataParameter, new()
         {
             List<T> list = new List<T>();
             if (0 > maxLevel)

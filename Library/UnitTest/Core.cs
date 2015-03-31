@@ -122,5 +122,16 @@ namespace UnitTest
             var result = Security.RSADecrypt(private_key, bytes);
         }
 
+        [TestMethod]
+        public void MongoID()
+        {
+            List<string> list = new List<string>();
+            for (int i = 0; i < 100000; i++)
+            {
+                list.Add(Assist.MongoID);
+            }
+
+        }
+
     }
 }
