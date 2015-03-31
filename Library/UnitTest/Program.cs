@@ -12,12 +12,17 @@ namespace Aes_Example
     {
         public static void Main()
         {
-            //for (int i = 0; i < 100000; i++)
-            //{
-            //    Thread.Sleep(100);
-            //    Console.WriteLine(Assist.MongoID);
-            //}
-            Console.WriteLine(Math.Pow(16, 6));
+            int uone = -1;
+            int zero = 0;
+            int one = 1;
+            
+            Console.WriteLine(uone / (float)zero);
+            Console.WriteLine(uone / (double)zero);
+            Console.WriteLine(zero / (float)zero);
+            Console.WriteLine(zero / (double)zero);
+            Console.WriteLine(one / (float)zero);
+            Console.WriteLine(one / (double)zero);
+            
             Console.ReadKey(true);
         }
     }
