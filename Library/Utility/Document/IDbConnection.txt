@@ -2,7 +2,6 @@
 // 参数字符串值没包含字符分号(;)，会从config文件里查找连接字符串
 // 没找到会抛NullReferenceException
 
-
 // Execute...方法
 // 如果执行前是打开状态，执行完还是打开状态，不会多手帮你关闭
 // 如果执行前是关闭状态或者中断状态，执行完是关闭状态
@@ -13,5 +12,8 @@
 // 如果有相同的列名，取第一列
 
 
-IDbConnection 没有 Limit 扩展方法
-SqlConnection 有 2 个 Limit 的扩展方法 ROW_NUMBER 和 TOP NOT IN (2012暂未支持)
+// IDbConnection 没有 Limit 扩展方法
+// SqlConnection 有 2 个 Limit 的扩展方法 ROW_NUMBER 和 TOP NOT IN (2012暂未支持)
+
+// MongoID 
+// 请查看Core.txt

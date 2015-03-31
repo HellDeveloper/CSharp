@@ -1,2 +1,10 @@
 ﻿// TryTo... 转换失败返回null
 // int i = str.TryToInt() ?? 0;
+
+
+// MongoID
+// MongoDB数据库生成唯一的ID，长度为24。
+// Time（时间戳）：8个位字符（现在-new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)）
+// Machine（主机）：6个字符
+// PID（进程ID）：4个字符
+// INC（自增长）：6个字符
