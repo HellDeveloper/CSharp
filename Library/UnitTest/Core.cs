@@ -125,12 +125,7 @@ namespace UnitTest
         [TestMethod]
         public void MongoID()
         {
-            List<string> list = new List<string>();
-            for (int i = 0; i < 100000; i++)
-            {
-                list.Add(Assist.MongoID);
-            }
-
+            Console.WriteLine(Assist.MongoID);
         }
 
     }

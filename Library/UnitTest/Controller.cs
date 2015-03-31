@@ -86,10 +86,10 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox(null, "NULL", "ReadTime")); // 拼接SQL
                 pnl.Controls.Add(CreateTextBox("Category", "问候", "Category"));
                 var args = pnl.CreateParameters<SqlParameter>();
+                args.Add("@SNID", conn.MongoID(), "SNID");
                 string build_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
                 string get_sql = args.GetInsertSql(Factory.LETTER_TABLE);
                 conn.ExecuteNonQuery(build_sql, args);
-                conn.ExecuteNonQuery(get_sql);
             }
             
         }

@@ -206,6 +206,29 @@ namespace Utility.Data
                 return "DELETE FROM " + table_name;
             return String.Format("DELETE FROM {0} WHERE {1}", table_name, where);
         }
+        
+        /// <summary>
+        /// 构建查询的SQL
+        /// </summary>
+        /// <param name="args">查询条件</param>
+        /// <param name="table_name">表名</param>
+        /// <param name="func">生成查询条件的方式</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string SelectSql(IEnumerable<IDataParameter> args, string table_name, Func<IEnumerable<IDataParameter>, string> func, string fieldname)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("SELECT ");
+            if (String.IsNullOrWhiteSpace(fieldname))
+                builder.Append("*");
+            else
+                builder.Append(fieldname);
+            builder.Append(" FROM ").Append(table_name);
+            string where = func(args);
+            if (!String.IsNullOrWhiteSpace(where))
+                builder.Append(" WHERE ").Append(where);
+            return builder.ToString();
+        }
         #endregion
 
         #region Get SQL
@@ -257,7 +280,7 @@ namespace Utility.Data
         /// <param name="where"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
-        public static string GetUpdateSql(IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where, string table_name)
+        public static string GetUpdateSql(this IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where, string table_name)
         {
             return Sql.UpdateSql(args, where, table_name, Sql.GetSetSql, Sql.GetConditionSql);
         }
@@ -271,6 +294,18 @@ namespace Utility.Data
         public static string GetDeleteSql(this IEnumerable<IDataParameter> args, string table_name)
         {
             return Sql.DeleteSql(args, table_name, Sql.GetConditionSql);
+        }
+        
+        /// <summary>
+        /// 构建查询SQL
+        /// </summary>
+        /// <param name="args">where 条件</param>
+        /// <param name="table_naem">表名</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string GetSelectSql(this IEnumerable<IDataParameter> args, string table_naem, string fieldname = null)
+        {
+            return Sql.SelectSql(args, table_naem, Sql.GetConditionSql, fieldname);
         }
         #endregion
 
@@ -337,6 +372,18 @@ namespace Utility.Data
         public static string BuildDeleteSql(this IEnumerable<IDataParameter> args, string table_name)
         {
             return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// 构建查询SQL
+        /// </summary>
+        /// <param name="args">where 条件</param>
+        /// <param name="table_naem">表名</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string GetSelectSql(this IEnumerable<IDataParameter> args, string table_naem, string fieldname = null)
+        {
+            return Sql.SelectSql(args, table_naem, Sql.BuildConditionSql, fieldname);
         }
         #endregion
 

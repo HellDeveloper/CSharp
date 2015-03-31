@@ -88,6 +88,7 @@ namespace UnitTest
                 args.Add("@SendTime", DateTime.Now, "SendTime =");
                 args.Add(null, "NULL", "ReadTime"); // 拼接SQL
                 args.Add("@Category", "问候", "Category =");
+                args.Add("@SNID", conn.MongoID(), "SNID");
                 string insert_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
                 /*
                  INSERT INTO Letter 
