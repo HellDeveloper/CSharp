@@ -381,7 +381,7 @@ namespace Utility.Data
         /// <param name="table_naem">表名</param>
         /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
         /// <returns>SELECT语句</returns>
-        public static string GetSelectSql(this IEnumerable<IDataParameter> args, string table_naem, string fieldname = null)
+        public static string BuildSelectSql(this IEnumerable<IDataParameter> args, string table_naem, string fieldname = null)
         {
             return Sql.SelectSql(args, table_naem, Sql.BuildConditionSql, fieldname);
         }
