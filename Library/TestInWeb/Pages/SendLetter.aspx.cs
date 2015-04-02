@@ -27,7 +27,7 @@ namespace TestInWeb.Pages
                 snid = System.DateTime.Now.Ticks.ToString();
                 args.Add("@Category", "I Don't Know", "Category");
                 args.Add("", "'" + snid + "'", "SNID"); // 拼接SQL
-                string sql = args.BuildInsertSql("Letter");
+                string sql = this.Connection.BuildInsertSql("Letter", args);
                 this.Connection.ExecuteNonQuery(sql, args);
                 this.btnSend.Text = "更新";
                 this.form1.Action = "./SendLetter.aspx?SNID=" + snid;
@@ -36,7 +36,7 @@ namespace TestInWeb.Pages
             {
                 List<SqlParameter> where = new List<SqlParameter>();
                 where.Add("@SNID", snid, "SNID =");
-                string sql = args.BuildUpdateSql("Letter", where);
+                string sql = this.Connection.BuildUpdateSql("Letter", args, where);
                 this.Connection.ExecuteNonQuery(sql, args.Concat(where));
             }
         }

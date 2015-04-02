@@ -87,8 +87,8 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox("Category", "问候", "Category"));
                 var args = pnl.CreateParameters<SqlParameter>();
                 args.Add("@SNID", conn.MongoID(), "SNID");
-                string build_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
-                string get_sql = args.GetInsertSql(Factory.LETTER_TABLE);
+                string build_sql = conn.BuildInsertSql(Factory.LETTER_TABLE, args);
+                string get_sql = conn.GetInsertSql(Factory.LETTER_TABLE, args);
                 conn.ExecuteNonQuery(build_sql, args);
             }
             
@@ -108,8 +108,8 @@ namespace UnitTest
                 pnl.Controls.Add(CreateTextBox(null, "ReadTime IS NULL", " J")); // 拼接SQL
                 pnl.Controls.Add(CreateTextBox("Category", "", "Category Like"));
                 var args = pnl.CreateParameters<SqlParameter>();
-                string build_sql = args.BuildDeleteSql(TABLE_NAME);
-                string get_sql = args.GetDeleteSql(TABLE_NAME);
+                string build_sql = conn.BuildDeleteSql(TABLE_NAME, args);
+                string get_sql = conn.GetDeleteSql(TABLE_NAME, args);
             }
         }
 

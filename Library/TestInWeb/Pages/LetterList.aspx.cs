@@ -32,7 +32,7 @@ namespace TestInWeb.Pages
                 sql = "SELECT * FROM Letter";
             else
                 sql = String.Format("SELECT * FROM Letter WHERE {0}", condition);
-            sql = this.Connection.Limit(sql, 0, 10); // 拿前10条
+            sql = this.Connection.LimitSql(sql, 0, 10); // 拿前10条
             DataTable dt = this.Connection.ExecuteDataTable(sql, args);
             this.gv.DataSource = dt;
             this.gv.DataBind();

@@ -118,6 +118,178 @@ namespace Utility.Data
         }
         #endregion
 
+         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string ConditionSql(IDataParameter param, Func<IDataParameter, object> func)
+        {
+            if (String.IsNullOrWhiteSpace(param.ParameterName))
+                return param.Value == null ? null : param.Value.ToString();
+            if (param.SourceVersion == DataRowVersion.Original)
+                if (String.IsNullOrWhiteSpace(param.Value.TryToString()))
+                    return null;
+            return String.Format("{0}{1}{2}", param.SourceColumn, Assist.WHITE_SPACE, func(param));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string ConditionSql(IEnumerable<IDataParameter> args, Func<IDataParameter, object> func)
+        {
+            var temp = EEnumerable.ToStringBuilder(args, func, " AND ");
+            return temp == null ? String.Empty : temp.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string ConditionSql(IEnumerable<IEnumerable<IDataParameter>> args, Func<IEnumerable<IDataParameter>, object> func)
+        {
+            var temp = EEnumerable.ToStringBuilder(args, func, " OR ");
+            return temp == null ? String.Empty : temp.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string InsertSql(IEnumerable<IDataParameter> args, string table_name, Func<IDataParameter, object> func)
+        {
+            var tuple = EEnumerable.ToStringBuilder(args, Sql.GetFieldName, func, ", ");
+            return String.Format("INSERT INTO {0} ({1}) VALUES ({2})", table_name, tuple.Item1, tuple.Item2);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="where"></param>
+        /// <param name="table_name"></param>
+        /// <param name="func_args"></param>
+        /// <param name="func_where"></param>
+        /// <returns></returns>
+        public static string UpdateSql(IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where, string table_name, Func<IDataParameter, object> func_args, Func<IEnumerable<IDataParameter>, string> func_where)
+        {
+            var sets = EEnumerable.ToStringBuilder(args, func_args);
+            if (sets == null)
+                return String.Empty;
+            var wheres = func_where(where);
+            if (String.IsNullOrWhiteSpace(wheres))
+                return String.Format("UPDATE {0} SET {1} ", table_name, sets);
+            return String.Format("UPDATE {0} SET {1} WHERE {2}", table_name, sets, wheres);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public static string DeleteSql(IEnumerable<IDataParameter> args, string table_name, Func<IEnumerable<IDataParameter>, string> func)
+        {
+            string where = func(args);
+            if (String.IsNullOrWhiteSpace(where))
+                return "DELETE FROM " + table_name;
+            return String.Format("DELETE FROM {0} WHERE {1}", table_name, where);
+        }
+        
+        /// <summary>
+        /// 构建查询的SQL
+        /// </summary>
+        /// <param name="args">查询条件</param>
+        /// <param name="table_name">表名</param>
+        /// <param name="func">生成查询条件的方式</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string SelectSql(IEnumerable<IDataParameter> args, string table_name, Func<IEnumerable<IDataParameter>, string> func, string fieldname)
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.Append("SELECT ");
+            if (String.IsNullOrWhiteSpace(fieldname))
+                builder.Append("*");
+            else
+                builder.Append(fieldname);
+            builder.Append(" FROM ").Append(table_name);
+            string where = func(args);
+            if (!String.IsNullOrWhiteSpace(where))
+                builder.Append(" WHERE ").Append(where);
+            return builder.ToString();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string GetConditionSql(this IDataParameter param)
+        {
+            return Sql.ConditionSql(param, Sql.FormatSqlValue);
+        }
+
+        /// <summary>
+        /// AND
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string GetConditionSql(this IEnumerable<IDataParameter> args)
+        {
+            return Sql.ConditionSql(args, Sql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// OR
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string GetConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
+        {
+            return Sql.ConditionSql(args, Sql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql(this IDataParameter param)
+        {
+            return Sql.ConditionSql(param, Sql.GetParameterName);
+        }
+
+        /// <summary>
+        /// AND
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql(this IEnumerable<IDataParameter> args)
+        {
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// OR
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
+        {
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+        }
+
+#if OLD
         #region Core
         /// <summary>
         /// 
@@ -386,70 +558,7 @@ namespace Utility.Data
             return Sql.SelectSql(args, table_naem, Sql.BuildConditionSql, fieldname);
         }
         #endregion
-
-        #region Limit
-        /// <summary>
-        /// 限制查询 必须是SQL Server 2005 以上
-        /// </summary>
-        /// <param name="select_sql">查询的SQL语句</param>
-        /// <param name="startIndex">开始的索引（从零开始）</param>
-        /// <param name="count">拿多少条</param>
-        /// <param name="orderBy">排序SQL语句（不需要写 order by 关键字）</param>
-        /// <returns>新的查询语句</returns>
-        public static string LimitOfSqlServerRowNumber(string select_sql, int startIndex, int count = 10, string orderBy = "ID ASC")
-        {
-            var i = select_sql.IndexOf(Assist.WHITE_SPACE);
-            //if (i < 0 || String.IsNullOrWhiteSpace(orderBy))
-            //    return null;
-            string format = "SELECT * FROM (SELECT ROW_NUMBER () OVER (ORDER BY {1}) AS ___RowID, {0}) as ___temp WHERE ___RowID >= {2} AND ___RowID < {3}";
-            return String.Format(format, select_sql.Substring(i, select_sql.Length - i), orderBy, startIndex + 1, startIndex + count + 1);
-        }
-
-        /// <summary>
-        /// 限制查询 (TOP NOT IN)最老版本
-        /// </summary>
-        /// <param name="select_sql">查询的SQL语句</param>
-        /// <param name="startIndex">开始的索引（从零开始）</param>
-        /// <param name="count">拿多少条</param>
-        /// <param name="select_field">not in 的 字段</param>
-        /// <returns>新的查询语句</returns>
-        public static string LimitOfSqlServerTopNotIn(string select_sql, int startIndex, string select_field, int count = 10)
-        {
-            var i = select_sql.IndexOf(Assist.WHITE_SPACE);
-            //if (i < 0 || String.IsNullOrWhiteSpace(orderBy))
-            //    return null;
-            string format = "SELECT TOP {3} * FROM ({0}) as ___tempo WHERE {1} NOT IN (SELECT TOP {2} {1} FROM ({0}) AS ___tempi)";
-            return String.Format(format, select_sql, select_field, startIndex, count);
-        }
-
-        /// <summary>
-        /// 限制查询 必须是SQL Server 2005 以上 (ROW_NUMBER)
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="select_sql">查询的SQL语句</param>
-        /// <param name="startIndex">开始的索引（从零开始）</param>
-        /// <param name="count">拿多少条</param>
-        /// <param name="orderBy">排序SQL语句（不需要写 order by 关键字）</param>
-        /// <returns>新的查询语句</returns>
-        public static string Limit(this System.Data.SqlClient.SqlConnection conn, string select_sql, int startIndex, int count, string orderBy = "ID ASC")
-        {
-            return Sql.LimitOfSqlServerRowNumber(select_sql, startIndex, count, orderBy);
-        }
-
-        /// <summary>
-        /// 限制查询 (TOP NOT IN)最老版本
-        /// </summary>
-        /// <param name="conn"></param>
-        /// <param name="select_sql">查询的SQL语句</param>
-        /// <param name="startIndex">开始的索引（从零开始）</param>
-        /// <param name="count">拿多少条</param>
-        /// <param name="select_field">not in 的 字段</param>
-        /// <returns>新的查询语句</returns>
-        public static string Limit(this System.Data.SqlClient.SqlConnection conn, string select_sql, int startIndex, string select_field = "ID", int count = 10)
-        {
-            return Sql.LimitOfSqlServerTopNotIn(select_sql, startIndex, select_field, count);
-        }
-        #endregion
+#endif
 
         #region 快捷构建Sql
         /// <summary>

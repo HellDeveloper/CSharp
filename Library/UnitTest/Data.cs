@@ -89,7 +89,7 @@ namespace UnitTest
                 args.Add(null, "NULL", "ReadTime"); // 拼接SQL
                 args.Add("@Category", "问候", "Category =");
                 args.Add("@SNID", conn.MongoID(), "SNID");
-                string insert_sql = args.BuildInsertSql(Factory.LETTER_TABLE);
+                string insert_sql = conn.BuildInsertSql(Factory.LETTER_TABLE, args);
                 /*
                  INSERT INTO Letter 
                  (FromName, ToName, Title, Contents, SendTime, ReadTime, Category) 
@@ -110,7 +110,7 @@ namespace UnitTest
                 var where = Factory.CreateParameters();
                 where.Add("@FromName", "Jack", "FromName =");
                 where.Add("", "ReadTime IS NULL", "");// 拼接SQL, ParameterName is null or whitespace
-                string update_sql = args.BuildUpdateSql(Factory.LETTER_TABLE, where);
+                string update_sql = conn.BuildUpdateSql(Factory.LETTER_TABLE, where, args);
                 args.AddRange(where);
                 conn.ExecuteNonQuery(update_sql, args);
             }
@@ -153,7 +153,7 @@ namespace UnitTest
                     sql = String.Format("SELECT * FROM {0}", Factory.LETTER_TABLE);
                 else
                     sql = String.Format("SELECT * FROM {0} WHERE {1}", Factory.LETTER_TABLE, conditions);
-                sql = conn.Limit(sql, 50, "ID", 10);
+                sql = conn.LimitSql(sql, 50, "ID", 10);
                 DataTable dt = conn.ExecuteDataTable(sql, list);
             }
         }

@@ -52,6 +52,7 @@
       <DependentUpon>TryTo.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\EDbConnection.cs" />
+    <Compile Include="Data\ESqlConnection.cs" />
     <Compile Include="Generic\Comparable.cs" />
     <Compile Include="Generic\Comparer.cs" />
     <Compile Include="Generic\ECollection.cs" />

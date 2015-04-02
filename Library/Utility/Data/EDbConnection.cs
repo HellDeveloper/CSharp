@@ -701,16 +701,195 @@ namespace Utility.Data
     }
     #endregion
 
-    #region
-    /// <summary>
-    /// 
-    /// </summary>
+    #region SQL
     public static partial class EDbConnection
     {
-        //public DataTable GetByEquals(string tableName, string fieldName, object value)
-        //{
-        //    string sql = String.Format("SELECT * FROM ");
-        //}
+        #region Get SQL
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string GetConditionSql<T>(this T conn, IDataParameter param) where T : IDbConnection
+        {
+            return Sql.ConditionSql(param, Sql.FormatSqlValue);
+        }
+
+        /// <summary>
+        /// AND
+        /// </summary>
+        /// <param name="args"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <returns></returns>
+        public static string GetConditionSql<T>(this T conn, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.ConditionSql(args, Sql.FormatSqlValue);
+        }
+
+        /// <summary>
+        /// OR
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string GetConditionSql<T>(this T conn, IEnumerable<IEnumerable<IDataParameter>> args) where T : IDbConnection
+        {
+            return Sql.ConditionSql(args, Sql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <returns></returns>
+        public static string GetInsertSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.InsertSql(args, table_name, Sql.GetParameterValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="where"></param>
+        /// <param name="table_name"></param>
+        /// <returns></returns>
+        public static string GetUpdateSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where) where T : IDbConnection
+        {
+            return Sql.UpdateSql(args, where, table_name, Sql.GetSetSql, Sql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <returns></returns>
+        public static string GetDeleteSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.DeleteSql(args, table_name, Sql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// 构建查询SQL
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args">where 条件</param>
+        /// <param name="table_naem">表名</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string GetSelectSql<T>(this T conn, string table_naem, IEnumerable<IDataParameter> args, string fieldname = null) where T : IDbConnection
+        {
+            return Sql.SelectSql(args, table_naem, Sql.GetConditionSql, fieldname);
+        }
+        #endregion
+
+        #region Build SQL
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql<T>(this T conn, IDataParameter param) where T : IDbConnection
+        {
+            return Sql.ConditionSql(param, Sql.GetParameterName);
+        }
+
+        /// <summary>
+        /// AND
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql<T>(this T conn, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// OR
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public static string BuildConditionSql<T>(this T conn, IEnumerable<IEnumerable<IDataParameter>> args) where T : IDbConnection
+        {
+            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <returns></returns>
+        public static string BuildInsertSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.InsertSql(args, table_name, Sql.BuildParameterValue);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="table_name"></param>
+        /// <param name="where"></param>
+        /// <returns></returns>
+        public static string BuildUpdateSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where) where T : IDbConnection
+        {
+            return Sql.UpdateSql(args, where, table_name, Sql.BuildSetSql, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// 构建删除的SQL语句
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args"></param>
+        /// <param name="table_name">表名</param>
+        /// <returns>SQL语句</returns>
+        public static string BuildDeleteSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
+        {
+            return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
+        }
+
+        /// <summary>
+        /// 构建查询SQL
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
+        /// <param name="args">where 条件</param>
+        /// <param name="table_naem">表名</param>
+        /// <param name="fieldname">查询的字段名(如果是String.Empty || null 就是 *)</param>
+        /// <returns>SELECT语句</returns>
+        public static string BuildSelectSql<T>(this T conn, string table_naem, IEnumerable<IDataParameter> args, string fieldname = null) where T : IDbConnection
+        {
+            return Sql.SelectSql(args, table_naem, Sql.BuildConditionSql, fieldname);
+        }
+        #endregion
+
+
+        
     }
     #endregion
 }
