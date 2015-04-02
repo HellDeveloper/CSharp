@@ -22,7 +22,10 @@ namespace Aes_Example
             Console.WriteLine(zero / (double)zero);
             Console.WriteLine(one / (float)zero);
             Console.WriteLine(one / (double)zero);
-            
+            Console.WriteLine(long.MaxValue);
+            Console.WriteLine((DateTime.Now - Assist.Epoch).Ticks / 1000);
+            Console.WriteLine(DateTime.Now.Ticks);
+            Console.WriteLine(Assist.MongoID);
             Console.ReadKey(true);
         }
     }
