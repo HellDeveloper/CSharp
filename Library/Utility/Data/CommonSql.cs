@@ -10,9 +10,9 @@ using Utility.Core;
 namespace Utility.Data
 {
     /// <summary>
-    /// SQL语句
+    /// 
     /// </summary>
-    public static class Sql
+    public static class CommonSql
     {
         #region Help
         /// <summary>
@@ -27,13 +27,11 @@ namespace Utility.Data
         {
             get 
             {
-                return System.Configuration.ConfigurationManager.AppSettings["ParameterNamePerfix"].TryToChar() ?? Sql.DEFAULT_PARAMETER_NAME_PERFIX;
+                return System.Configuration.ConfigurationManager.AppSettings["ParameterNamePerfix"].TryToChar() ?? CommonSql.DEFAULT_PARAMETER_NAME_PERFIX;
             }
         }
         
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>获取字段名</summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static string GetFieldName<T>(T param) where T : IDataParameter
@@ -43,9 +41,7 @@ namespace Utility.Data
             return Assist.GetBeforeFirstWhiteSpace(param.SourceColumn);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary>格式化Sql的值</summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static string FormatSqlValue<T>(this T param) where T : IDataParameter
@@ -65,9 +61,7 @@ namespace Utility.Data
                 return param.ToString();
         }
 
-        /// <summary>
-        /// 返回ParameterName
-        /// </summary>
+        /// <summary>获取ParameterName</summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static object GetParameterName<T>(T param) where T : IDataParameter
@@ -75,9 +69,7 @@ namespace Utility.Data
             return param.ParameterName;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary></summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static object GetParameterValue(IDataParameter param)
@@ -86,12 +78,10 @@ namespace Utility.Data
                 return param.Value == null ? null : param.Value.ToString();
             if (param.SourceVersion == DataRowVersion.Original && String.IsNullOrWhiteSpace(param.Value.TryToString()))
                 return "NULL";
-            return Sql.FormatSqlValue(param);
+            return CommonSql.FormatSqlValue(param);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /// <summary></summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static object BuildParameterValue(IDataParameter param)
@@ -103,18 +93,19 @@ namespace Utility.Data
             return param.ParameterName;
         }
 
+        /// <summary></summary>
         /// <param name="param"></param>
         /// <returns></returns>
         public static string GetSetSql<T>(T param) where T : IDataParameter
         {
-            return String.Format("{0} = {1}", Sql.GetFieldName(param), Sql.GetParameterValue(param));
+            return String.Format("{0} = {1}", CommonSql.GetFieldName(param), CommonSql.GetParameterValue(param));
         }
 
         /// <param name="param"></param>
         /// <returns></returns>
         public static string BuildSetSql<T>(T param) where T : IDataParameter
         {
-            return String.Format("{0} = {1}", Sql.GetFieldName(param), Sql.BuildParameterValue(param));
+            return String.Format("{0} = {1}", CommonSql.GetFieldName(param), CommonSql.BuildParameterValue(param));
         }
         #endregion
 
@@ -167,7 +158,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string InsertSql(IEnumerable<IDataParameter> args, string table_name, Func<IDataParameter, object> func)
         {
-            var tuple = EEnumerable.ToStringBuilder(args, Sql.GetFieldName, func, ", ");
+            var tuple = EEnumerable.ToStringBuilder(args, CommonSql.GetFieldName, func, ", ");
             return String.Format("INSERT INTO {0} ({1}) VALUES ({2})", table_name, tuple.Item1, tuple.Item2);
         }
 
@@ -236,7 +227,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql(this IDataParameter param)
         {
-            return Sql.ConditionSql(param, Sql.FormatSqlValue);
+            return CommonSql.ConditionSql(param, CommonSql.FormatSqlValue);
         }
 
         /// <summary>
@@ -246,7 +237,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql(this IEnumerable<IDataParameter> args)
         {
-            return Sql.ConditionSql(args, Sql.GetConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.GetConditionSql);
         }
 
         /// <summary>
@@ -256,7 +247,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
         {
-            return Sql.ConditionSql(args, Sql.GetConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.GetConditionSql);
         }
 
         /// <summary>
@@ -266,7 +257,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql(this IDataParameter param)
         {
-            return Sql.ConditionSql(param, Sql.GetParameterName);
+            return CommonSql.ConditionSql(param, CommonSql.GetParameterName);
         }
 
         /// <summary>
@@ -276,7 +267,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql(this IEnumerable<IDataParameter> args)
         {
-            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.BuildConditionSql);
         }
 
         /// <summary>
@@ -286,7 +277,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql(this IEnumerable<IEnumerable<IDataParameter>> args)
         {
-            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.BuildConditionSql);
         }
 
 #if OLD

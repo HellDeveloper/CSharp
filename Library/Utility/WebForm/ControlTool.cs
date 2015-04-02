@@ -63,7 +63,7 @@ namespace Utility.WebForm
             if (String.IsNullOrWhiteSpace(control.ID))
                 temp = CreateParameter<T>(null, value, fieldname);
             else
-                temp= CreateParameter<T>(Sql.ParameterNamePerfix + control.ID, value, fieldname);
+                temp= CreateParameter<T>(CommonSql.ParameterNamePerfix + control.ID, value, fieldname);
             DbType<T>(control, temp);
             return temp;
         }

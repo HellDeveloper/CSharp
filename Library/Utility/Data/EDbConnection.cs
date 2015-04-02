@@ -49,7 +49,7 @@ namespace Utility.Data
             foreach (var item in args)
             { 
                 IDataParameter param = cmd.CreateParameter();
-                param.ParameterName = Sql.ParameterNamePerfix + (increment++).ToString();
+                param.ParameterName = CommonSql.ParameterNamePerfix + (increment++).ToString();
                 param.Value = item;
                 cmd.Parameters.Add(param);
             }
@@ -305,9 +305,7 @@ namespace Utility.Data
             return conn;
         }
 
-        /// <summary>
-        /// MongoDB 生成 唯一 的 ID
-        /// </summary>
+        /// <summary> MongoDB 生成 唯一 的 ID </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
         /// <returns></returns>
@@ -316,9 +314,7 @@ namespace Utility.Data
             return Assist.MongoID;
         }
 
-        /// <summary>
-        /// IDataReader 转 DataTable
-        /// </summary>
+        /// <summary> IDataReader 转 DataTable </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
         public static DataTable IDataReaderToDataTable(IDataReader reader)
@@ -706,7 +702,7 @@ namespace Utility.Data
     {
         #region Get SQL
         /// <summary>
-        /// 
+        /// 条件
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
@@ -714,11 +710,11 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql<T>(this T conn, IDataParameter param) where T : IDbConnection
         {
-            return Sql.ConditionSql(param, Sql.FormatSqlValue);
+            return CommonSql.ConditionSql(param, CommonSql.FormatSqlValue);
         }
 
         /// <summary>
-        /// AND
+        /// 条件AND
         /// </summary>
         /// <param name="args"></param>
         /// <typeparam name="T"></typeparam>
@@ -726,11 +722,11 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql<T>(this T conn, IEnumerable<IDataParameter> args) where T : IDbConnection
         {
-            return Sql.ConditionSql(args, Sql.FormatSqlValue);
+            return CommonSql.ConditionSql(args, CommonSql.GetConditionSql);
         }
 
         /// <summary>
-        /// OR
+        /// 条件OR
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
@@ -738,11 +734,11 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetConditionSql<T>(this T conn, IEnumerable<IEnumerable<IDataParameter>> args) where T : IDbConnection
         {
-            return Sql.ConditionSql(args, Sql.GetConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.GetConditionSql);
         }
 
         /// <summary>
-        /// 
+        /// 插入
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
@@ -751,34 +747,34 @@ namespace Utility.Data
         /// <returns></returns>
         public static string GetInsertSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
         {
-            return Sql.InsertSql(args, table_name, Sql.GetParameterValue);
+            return CommonSql.InsertSql(args, table_name, CommonSql.GetParameterValue);
         }
 
         /// <summary>
-        /// 
+        /// 更新
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
-        /// <param name="args"></param>
+        /// <param name="sets">设置</param>
+        /// <param name="where">条件</param>
+        /// <param name="table_name">表名</param>
+        /// <returns></returns>
+        public static string GetUpdateSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> sets, IEnumerable<IDataParameter> where) where T : IDbConnection
+        {
+            return CommonSql.UpdateSql(sets, where, table_name, CommonSql.GetSetSql, CommonSql.GetConditionSql);
+        }
+
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="conn"></param>
         /// <param name="where"></param>
         /// <param name="table_name"></param>
         /// <returns></returns>
-        public static string GetUpdateSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where) where T : IDbConnection
+        public static string GetDeleteSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> where) where T : IDbConnection
         {
-            return Sql.UpdateSql(args, where, table_name, Sql.GetSetSql, Sql.GetConditionSql);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="conn"></param>
-        /// <param name="args"></param>
-        /// <param name="table_name"></param>
-        /// <returns></returns>
-        public static string GetDeleteSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
-        {
-            return Sql.DeleteSql(args, table_name, Sql.GetConditionSql);
+            return CommonSql.DeleteSql(where, table_name, CommonSql.GetConditionSql);
         }
 
         /// <summary>
@@ -792,7 +788,7 @@ namespace Utility.Data
         /// <returns>SELECT语句</returns>
         public static string GetSelectSql<T>(this T conn, string table_naem, IEnumerable<IDataParameter> args, string fieldname = null) where T : IDbConnection
         {
-            return Sql.SelectSql(args, table_naem, Sql.GetConditionSql, fieldname);
+            return CommonSql.SelectSql(args, table_naem, CommonSql.GetConditionSql, fieldname);
         }
         #endregion
 
@@ -806,7 +802,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql<T>(this T conn, IDataParameter param) where T : IDbConnection
         {
-            return Sql.ConditionSql(param, Sql.GetParameterName);
+            return CommonSql.ConditionSql(param, CommonSql.GetParameterName);
         }
 
         /// <summary>
@@ -818,7 +814,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql<T>(this T conn, IEnumerable<IDataParameter> args) where T : IDbConnection
         {
-            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.BuildConditionSql);
         }
 
         /// <summary>
@@ -830,7 +826,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildConditionSql<T>(this T conn, IEnumerable<IEnumerable<IDataParameter>> args) where T : IDbConnection
         {
-            return Sql.ConditionSql(args, Sql.BuildConditionSql);
+            return CommonSql.ConditionSql(args, CommonSql.BuildConditionSql);
         }
 
         /// <summary>
@@ -843,7 +839,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildInsertSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
         {
-            return Sql.InsertSql(args, table_name, Sql.BuildParameterValue);
+            return CommonSql.InsertSql(args, table_name, CommonSql.BuildParameterValue);
         }
 
         /// <summary>
@@ -857,7 +853,7 @@ namespace Utility.Data
         /// <returns></returns>
         public static string BuildUpdateSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args, IEnumerable<IDataParameter> where) where T : IDbConnection
         {
-            return Sql.UpdateSql(args, where, table_name, Sql.BuildSetSql, Sql.BuildConditionSql);
+            return CommonSql.UpdateSql(args, where, table_name, CommonSql.BuildSetSql, CommonSql.BuildConditionSql);
         }
 
         /// <summary>
@@ -870,7 +866,7 @@ namespace Utility.Data
         /// <returns>SQL语句</returns>
         public static string BuildDeleteSql<T>(this T conn, string table_name, IEnumerable<IDataParameter> args) where T : IDbConnection
         {
-            return Sql.DeleteSql(args, table_name, Sql.BuildConditionSql);
+            return CommonSql.DeleteSql(args, table_name, CommonSql.BuildConditionSql);
         }
 
         /// <summary>
@@ -884,12 +880,9 @@ namespace Utility.Data
         /// <returns>SELECT语句</returns>
         public static string BuildSelectSql<T>(this T conn, string table_naem, IEnumerable<IDataParameter> args, string fieldname = null) where T : IDbConnection
         {
-            return Sql.SelectSql(args, table_naem, Sql.BuildConditionSql, fieldname);
+            return CommonSql.SelectSql(args, table_naem, CommonSql.BuildConditionSql, fieldname);
         }
         #endregion
-
-
-        
     }
     #endregion
 }
