@@ -1,0 +1,6 @@
+﻿//	以前：fieldname
+//	现在：data-fieldname 
+//	data-fieldname="字段名 比较运算符"，比较运算符一定要写
+//		data-fieldname="Name NOT LIKE"
+//		data-fieldname="BeginDate >="
+//		data-fieldname="ID ="

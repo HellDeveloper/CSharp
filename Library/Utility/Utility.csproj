@@ -87,6 +87,7 @@
     <Content Include="Document\Core.txt" />
     <Content Include="Document\IDataParameter.txt" />
     <Content Include="Document\IDbConnection.txt" />
+    <Content Include="Document\WebForm.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -56,9 +56,9 @@ namespace Utility.WebForm
             if (!(control is IAttributeAccessor))
                return null;
             string fieldname = ControlTool.GetDataFieldName(control);
-            if (fieldname == null)
+            if (String.IsNullOrWhiteSpace(fieldname))
                 return null;
-            string value = GetValue(control);
+            object value = GetValue(control);
             T temp = null;
             if (String.IsNullOrWhiteSpace(control.ID))
                 temp = CreateParameter<T>(null, value, fieldname);
@@ -80,10 +80,12 @@ namespace Utility.WebForm
         /// </summary>
         /// <param name="control"></param>
         /// <returns></returns>
-        private static string GetValue(Control control)
+        private static object GetValue(Control control)
         {
             if (control is ITextControl)
                 return (control as ITextControl).Text;
+            else if (control is ICheckBoxControl)
+                return (control as ICheckBoxControl).Checked;
             else if (control is HtmlInputControl)
                 return (control as HtmlInputControl).Value;
             else if (control is HtmlTextArea)
@@ -99,7 +101,7 @@ namespace Utility.WebForm
         /// <param name="func"></param>
         /// <param name="maxLevel"></param>
         /// <returns></returns>
-        public static List<T> CreateParameters<T>(this Control control, Func<T, T> func = null, int maxLevel = 2) where T : class, IDataParameter, new()
+        public static List<T> CreateParameters<T>(this Control control, Func<Control, T, T> func = null, int maxLevel = 2) where T : class, IDataParameter, new()
         {
             List<T> list = new List<T>();
             if (0 > maxLevel)
@@ -117,16 +119,13 @@ namespace Utility.WebForm
         /// <param name="currentLevel"></param>
         /// <param name="maxLevel"></param>
         /// <param name="func"></param>
-        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<T, T> func = null) where T : class, IDataParameter, new()
+        private static void create_parameters<T>(Control control, List<T> list, int currentLevel, int maxLevel, Func<Control, T, T> func = null) where T : class, IDataParameter, new()
         {
             T t = CreateParameter<T>(control);
+            if (func != null)
+                t = func(control, t);
             if (t != null)
-            {
-                if (func != null)
-                    t = func(t);
-                if (t != null)
-                    list.Add(t);
-            }
+                list.Add(t);
             if (currentLevel < maxLevel)
                 foreach (Control ctrl in control.Controls)
                     create_parameters(ctrl, list, currentLevel + 1, maxLevel, func);
@@ -178,7 +177,7 @@ namespace Utility.WebForm
         /// <param name="maxLevel">递归的深度</param>
         public static void FillData(this Control control, DataRow row, Action<Control, string, object> after_action = null, int maxLevel = 3)
         {
-            if (row.Table == null)
+            if (row == null || row.Table == null)
                 return;
             fill_data(control, row, after_action, 1, maxLevel);
         }
@@ -219,13 +218,14 @@ namespace Utility.WebForm
             value = value ?? String.Empty;
             if (control is System.Web.UI.ITextControl)
                 (control as System.Web.UI.ITextControl).Text = value.ToString();
+            else if (control is System.Web.UI.ICheckBoxControl)
+                (control as System.Web.UI.ICheckBoxControl).Checked = (value is bool) ? (bool)value : value.TryToString().TryToBool() ?? false;
             else if (control is System.Web.UI.HtmlControls.HtmlInputControl)
                 (control as System.Web.UI.HtmlControls.HtmlInputControl).Value = value.ToString();
             else if (control is System.Web.UI.HtmlControls.HtmlContainerControl)
                 (control as System.Web.UI.HtmlControls.HtmlContainerControl).InnerHtml = value.ToString();
             else if (control is System.Web.UI.IAttributeAccessor)
                 (control as System.Web.UI.IAttributeAccessor).SetAttribute("value", value.ToString());
-
         }
 
 
