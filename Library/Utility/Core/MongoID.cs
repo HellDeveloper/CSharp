@@ -12,7 +12,7 @@ namespace Utility.Core
     /// <summary>
     /// MongoDB 生成 唯一 的 ID
     /// </summary>
-    internal class MongoDBObjectID
+    internal class MongoID
     {
 
         private readonly object _inclock = new object();
@@ -21,9 +21,9 @@ namespace Utility.Core
         private byte[] _procId;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref = "MongoDBObjectID" /> class.
+        ///   Initializes a new instance of the <see cref = "MongoID" /> class.
         /// </summary>
-        public MongoDBObjectID()
+        public MongoID()
         {
             GenerateConstants();
         }
@@ -54,6 +54,7 @@ namespace Utility.Core
             var inc = BitConverter.GetBytes(GenerateInc());
             Array.Reverse(inc);
             Array.Copy(inc, 1, oid, copyidx, 3);
+
             return oid;
         }
 
@@ -72,12 +73,12 @@ namespace Utility.Core
         ///   Generates the time.
         /// </summary>
         /// <returns></returns>
-        private int GenerateTime()
+        private uint GenerateTime()
         {
             var now = DateTime.UtcNow;
             //DateTime nowtime = new DateTime(epoch.Year, epoch.Month, epoch.Day, now.Hour, now.Minute, now.Second, now.Millisecond);
             var diff = now - Assist.Epoch;
-            return Convert.ToInt32(Math.Floor(diff.TotalSeconds));
+            return (uint)Math.Floor(diff.TotalSeconds);
         }
 
         /// <summary>

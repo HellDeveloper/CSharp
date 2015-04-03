@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\IO.cs" />
-    <Compile Include="Core\MongoDBObjectID.cs" />
+    <Compile Include="Core\MongoID.cs" />
     <Compile Include="Core\Security.cs" />
     <Compile Include="Core\TryTo1.cs">
       <AutoGen>True</AutoGen>

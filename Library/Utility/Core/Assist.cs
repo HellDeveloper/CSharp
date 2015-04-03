@@ -18,7 +18,7 @@ namespace Utility.Core
         /// </summary>
         static Assist()
         {
-            _mongo_id = new MongoDBObjectID();
+            _mongo_id = new MongoID();
             Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         }
 
@@ -43,9 +43,9 @@ namespace Utility.Core
         /// <summary>
         /// 
         /// </summary>
-        private static readonly MongoDBObjectID _mongo_id;
+        private static readonly MongoID _mongo_id;
 
-        /// <summary> MongoDB 生成 唯一 的 ID
+        /// <summary> MongoDB 生成 唯一 的 ID （缺点：最大去到2070年左右）
         /// </summary>
         public static string MongoID
         {

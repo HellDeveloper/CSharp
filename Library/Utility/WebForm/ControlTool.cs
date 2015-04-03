@@ -170,8 +170,7 @@ namespace Utility.WebForm
             return true;
         }
 
-        /// <summary>
-        /// 在control子控件填充数据
+        /// <summary> 填充数据（包括当前控件）
         /// </summary>
         /// <param name="control"></param>
         /// <param name="row"></param>
@@ -184,8 +183,7 @@ namespace Utility.WebForm
             fill_data(control, row, after_action, 1, maxLevel);
         }
 
-        /// <summary>
-        /// 
+        /// <summary> 填充数据（包括当前控件）
         /// </summary>
         /// <param name="control"></param>
         /// <param name="row"></param>
@@ -223,6 +221,8 @@ namespace Utility.WebForm
                 (control as System.Web.UI.ITextControl).Text = value.ToString();
             else if (control is System.Web.UI.HtmlControls.HtmlInputControl)
                 (control as System.Web.UI.HtmlControls.HtmlInputControl).Value = value.ToString();
+            else if (control is System.Web.UI.HtmlControls.HtmlContainerControl)
+                (control as System.Web.UI.HtmlControls.HtmlContainerControl).InnerHtml = value.ToString();
             else if (control is System.Web.UI.IAttributeAccessor)
                 (control as System.Web.UI.IAttributeAccessor).SetAttribute("value", value.ToString());
 

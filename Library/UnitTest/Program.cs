@@ -10,7 +10,7 @@ namespace Aes_Example
 {
     class AesExample
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
             int uone = -1;
             int zero = 0;
@@ -22,10 +22,13 @@ namespace Aes_Example
             Console.WriteLine(zero / (double)zero);
             Console.WriteLine(one / (float)zero);
             Console.WriteLine(one / (double)zero);
-            Console.WriteLine(long.MaxValue);
-            Console.WriteLine((DateTime.Now - Assist.Epoch).Ticks / 1000);
-            Console.WriteLine(DateTime.Now.Ticks);
-            Console.WriteLine(Assist.MongoID);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(Assist.MongoID.ToString());
+                Thread.Sleep(1000);
+            }
+
             Console.ReadKey(true);
         }
     }
